@@ -462,7 +462,23 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   </button>
 </nav>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAJuvWwvfRmV3rKhoDTqve_pibAaMPKcQw",
+  authDomain: "financaspessoais-e8841.firebaseapp.com",
+  projectId: "financaspessoais-e8841",
+  storageBucket: "financaspessoais-e8841.firebasestorage.app",
+  messagingSenderId: "866829462575",
+  appId: "1:866829462575:web:a792d832137cfd0247eada"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const DOC_REF = doc(db, "financas", "pedro");
+
 // ═══════════════════════════════ DATA ═══════════════════════════════
 const KEY = 'pfpedro_v3';
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -508,11 +524,41 @@ const ATIVOS_DEF = [
   {id:'a1',nome:'Bitcoin',tipo:'Cripto',icon:'₿',cor:'#f59e0b',aportes:[],valorAtual:0},
 ];
 
-function load() {
-  try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch(e){}
+function defaultState() {
   return {lancs:[],fixos:[...FIXOS_DEF],receitas:[...REC_DEF],cats:[...CATS_DEF],cartoes:[...CARTOES_DEF],ativos:[...ATIVOS_DEF],conciliacoes:[]};
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch(e){ toast('Erro ao salvar'); } }
+function load() {
+  try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch(e){}
+  return defaultState();
+}
+async function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(st));
+    await setDoc(DOC_REF, {data: JSON.stringify(st)});
+  } catch(e){ console.error('Save error:', e); toast('Erro ao salvar'); }
+}
+async function syncFromFirebase() {
+  try {
+    const snap = await getDoc(DOC_REF);
+    if (snap.exists()) {
+      const remote = JSON.parse(snap.data().data);
+      st = remote;
+      localStorage.setItem(KEY, JSON.stringify(st));
+      renderAll();
+      toast('Dados sincronizados ✓');
+    }
+  } catch(e) { console.error('Sync error:', e); }
+}
+function startRealtimeSync() {
+  onSnapshot(DOC_REF, (snap) => {
+    if (snap.exists()) {
+      const remote = JSON.parse(snap.data().data);
+      st = remote;
+      localStorage.setItem(KEY, JSON.stringify(st));
+      renderAll();
+    }
+  });
+}
 
 let st = load();
 let mesAtual = new Date().getMonth();
@@ -802,7 +848,7 @@ function salvarConc(){
   const idx=st.conciliacoes.findIndex(c=>c.key===key);
   const entry={key,saldoReal:real,teorico,obs:document.getElementById('conc-obs').value,faturas};
   if(idx>=0) st.conciliacoes[idx]=entry; else st.conciliacoes.push(entry);
-  save(); fecharSheet('ov-conc'); renderConc(); toast('Conciliação salva ✓');
+  save();fecharSheet('ov-conc'); renderConc(); toast('Conciliação salva ✓');
 }
 
 function delCartao(id,e){
@@ -1206,7 +1252,54 @@ function renderAll(){
   renderDash();renderFixos();renderVenc();renderDFC();renderConc();renderInv();renderConfig();
 }
 
-renderAll();
+
+// Expose functions to global scope (required for ES module)
+window.abrirAporte = abrirAporte;
+window.abrirConc = abrirConc;
+window.abrirSheet = abrirSheet;
+window.abrirSheetAtivo = abrirSheetAtivo;
+window.abrirSheetFixo = abrirSheetFixo;
+window.addCartao = addCartao;
+window.addCat = addCat;
+window.addReceita = addReceita;
+window.atualizarValor = atualizarValor;
+window.delAporte = delAporte;
+window.delAtivo = delAtivo;
+window.delCartao = delCartao;
+window.delFixo = delFixo;
+window.delLanc = delLanc;
+window.delRec = delRec;
+window.editCat = editCat;
+window.exportCSV = exportCSV;
+window.exportJSON = exportJSON;
+window.fecharSheet = fecharSheet;
+window.handleDelAporte = handleDelAporte;
+window.irPara = irPara;
+window.mudarMes = mudarMes;
+window.salvarAporte = salvarAporte;
+window.salvarAtivo = salvarAtivo;
+window.salvarConc = salvarConc;
+window.salvarFixo = salvarFixo;
+window.salvarLanc = salvarLanc;
+window.setDFC = setDFC;
+window.setFCartao = setFCartao;
+window.setFCat = setFCat;
+window.setFP = setFP;
+window.setFixoFP = setFixoFP;
+window.setFixoPag = setFixoPag;
+window.setPag = setPag;
+window.setTipoAtivo = setTipoAtivo;
+window.setVisao = setVisao;
+window.setXCat = setXCat;
+window.importJSON = importJSON;
+window.toast = toast;
+
+async function init() {
+  await syncFromFirebase();
+  renderAll();
+  startRealtimeSync();
+}
+init();
 </script>
 </body>
 </html>
