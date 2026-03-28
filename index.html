@@ -9,45 +9,68 @@
 <title>Finanças</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0a0a0f; --bg2:#12121a; --bg3:#1a1a26;
-  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
-  --text:#f0efe8; --text2:rgba(240,239,232,0.55); --text3:rgba(240,239,232,0.3);
-  --gold:#c9a96e; --gold2:#e8c98a; --gold-dim:rgba(201,169,110,0.15);
-  --green:#4ade80; --green-dim:rgba(74,222,128,0.12);
-  --red:#f87171; --red-dim:rgba(248,113,113,0.12);
-  --blue:#60a5fa; --blue-dim:rgba(96,165,250,0.12);
-  --amber:#fbbf24; --amber-dim:rgba(251,191,36,0.12);
-  --purple:#a78bfa; --purple-dim:rgba(167,139,250,0.12);
-  --radius:14px; --radius-sm:8px; --nav-h:72px;
-  --font-display:'DM Serif Display',serif; --font-body:'DM Sans',sans-serif;
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a26;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#f0efe8;--text2:rgba(240,239,232,0.55);--text3:rgba(240,239,232,0.3);
+  --gold:#c9a96e;--gold2:#e8c98a;--gold-dim:rgba(201,169,110,0.15);
+  --green:#4ade80;--green-dim:rgba(74,222,128,0.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,0.12);
+  --blue:#60a5fa;--blue-dim:rgba(96,165,250,0.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,0.12);
+  --radius:14px;--radius-sm:8px;--nav-h:72px;
+  --font-display:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 ::-webkit-scrollbar{width:0}
 
-.app{max-width:480px;margin:0 auto;position:relative;min-height:100vh}
+/* PIN */
+.pin-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pin-logo{font-family:var(--font-display);font-size:30px;color:var(--gold);margin-bottom:6px}
+.pin-sub{font-size:11px;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:44px}
+.pin-dots{display:flex;gap:16px;margin-bottom:44px}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--border2);background:none;transition:all .15s}
+.pin-dot.filled{background:var(--gold);border-color:var(--gold)}
+.pin-dot.shake{background:var(--red);border-color:var(--red)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,72px);gap:12px}
+.pin-btn{width:72px;height:72px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);font-size:22px;font-family:var(--font-display);color:var(--text);cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.pin-btn:active{transform:scale(.9);background:var(--bg3)}
+.pin-btn.ghost{background:none;border:none;cursor:default}
+.pin-btn.del{font-size:16px;color:var(--text2)}
+.pin-err{font-size:12px;color:var(--red);margin-top:18px;opacity:0;transition:opacity .2s}
+.pin-err.show{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pin-dots.shake{animation:shake .3s ease}
 
-/* TOPBAR */
-.topbar{position:sticky;top:0;z-index:50;background:rgba(10,10,15,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.topbar-greeting{font-size:11px;color:var(--text3);letter-spacing:.8px;text-transform:uppercase}
-.topbar-title{font-family:var(--font-display);font-size:22px;letter-spacing:-.3px}
+/* LAYOUT */
+.app{max-width:480px;margin:0 auto;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(10,10,15,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:14px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tb-left{display:flex;flex-direction:column;gap:2px}
+.tb-greeting{font-size:11px;color:var(--text3);letter-spacing:.8px;text-transform:uppercase}
+.tb-title{font-family:var(--font-display);font-size:22px;letter-spacing:-.3px}
+.tb-right{display:flex;align-items:center;gap:8px}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:6px;transition:color .15s;line-height:1;border-radius:50%}
+.icon-btn:hover{color:var(--gold)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);transition:background .3s}
+.sync-dot.syncing{background:var(--amber)}
+.sync-dot.error{background:var(--red)}
 .month-nav{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 10px}
 .month-nav button{background:none;border:none;cursor:pointer;color:var(--text2);font-size:16px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .15s}
-.month-nav button:hover{background:var(--border);color:var(--text)}
+.month-nav button:hover{color:var(--text)}
 .month-label{font-size:13px;font-weight:500;min-width:68px;text-align:center}
 
 /* SCREENS */
-.screen{display:none;padding:16px 16px calc(var(--nav-h) + 20px);animation:fadeUp .22s ease}
+.screen{display:none;padding:14px 16px calc(var(--nav-h)+20px);animation:fadeUp .2s ease}
 .screen.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* NAV */
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(10,10,15,0.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;z-index:100;height:var(--nav-h);padding-bottom:env(safe-area-inset-bottom,0px);overflow-x:auto}
 .nav::-webkit-scrollbar{display:none}
-.nav-btn{flex:0 0 auto;min-width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;font-size:10px;font-family:var(--font-body);color:var(--text3);letter-spacing:.3px;transition:color .2s;padding:0 8px}
+.nav-btn{flex:0 0 auto;min-width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;font-size:10px;font-family:var(--font-body);color:var(--text3);letter-spacing:.3px;transition:color .2s;padding:0 8px}
 .nav-btn.active{color:var(--gold)}
-.nav-btn svg{width:20px;height:20px;stroke-width:1.5;transition:transform .2s;flex-shrink:0}
+.nav-btn svg{width:20px;height:20px;stroke-width:1.5;transition:transform .2s}
 .nav-btn.active svg{transform:translateY(-1px)}
 
 /* CARDS */
@@ -55,22 +78,40 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .card-title{font-size:11px;font-weight:500;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:14px}
 
 /* HERO */
-.hero{background:linear-gradient(135deg,#16161f 0%,#1e1c2e 100%);border:1px solid var(--border2);border-radius:var(--radius);padding:22px 20px 18px;margin-bottom:10px;position:relative;overflow:hidden}
+.hero{background:linear-gradient(135deg,#16161f 0%,#1e1c2e 100%);border:1px solid var(--border2);border-radius:var(--radius);padding:20px;margin-bottom:10px;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;background:radial-gradient(circle,rgba(201,169,110,0.12) 0%,transparent 70%);pointer-events:none}
 .hero-label{font-size:11px;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:6px}
-.hero-value{font-family:var(--font-display);font-size:38px;letter-spacing:-1px;line-height:1}
-.hero-value.pos{color:var(--gold2)} .hero-value.neg{color:var(--red)}
+.hero-value{font-family:var(--font-display);font-size:36px;letter-spacing:-1px;line-height:1}
+.hv-pos{color:var(--gold2)}.hv-neg{color:var(--red)}
 .hero-meta{display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap}
-.hero-meta-item{display:flex;flex-direction:column;gap:3px}
+.hmi{display:flex;flex-direction:column;gap:3px}
 .hml{font-size:10px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase}
 .hmv{font-size:14px;font-weight:500}
 
+/* PREV MONTH CARD */
+.prev-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.prev-icon{width:36px;height:36px;border-radius:10px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.prev-body{flex:1}
+.prev-title{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.prev-row{display:flex;gap:16px}
+.prev-item{display:flex;flex-direction:column;gap:2px}
+.prev-lbl{font-size:10px;color:var(--text3)}
+.prev-val{font-size:13px;font-weight:500}
+
+/* PROJECTION */
+.proj-card{background:linear-gradient(135deg,#0f1a0f 0%,#141f10 100%);border:1px solid rgba(74,222,128,0.15);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
+.proj-title{font-size:11px;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:10px}
+.proj-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:6px}
+.proj-key{color:var(--text2)}
+.proj-bar-track{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:10px}
+.proj-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+
 /* METRICS */
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 14px 12px}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px}
 .metric-label{font-size:10px;color:var(--text3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px}
-.metric-value{font-size:19px;font-weight:500;line-height:1}
-.mv-green{color:var(--green)} .mv-red{color:var(--red)} .mv-gold{color:var(--gold)} .mv-blue{color:var(--blue)}
+.metric-value{font-size:18px;font-weight:500;line-height:1}
+.mv-g{color:var(--green)}.mv-r{color:var(--red)}.mv-gold{color:var(--gold)}.mv-b{color:var(--blue)}
 
 /* PILLS */
 .pill-row{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
@@ -94,7 +135,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .item-name{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item-sub{font-size:11px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .item-amount{font-size:15px;font-weight:500;flex-shrink:0}
-.ia-dim{color:var(--text2)} .ia-green{color:var(--green)} .ia-red{color:var(--red)} .ia-gold{color:var(--gold)}
+.ia-dim{color:var(--text2)}.ia-g{color:var(--green)}.ia-r{color:var(--red)}.ia-gold{color:var(--gold)}
 
 /* BADGES */
 .badge{display:inline-flex;align-items:center;font-size:9px;font-weight:500;letter-spacing:.4px;padding:2px 6px;border-radius:4px;text-transform:uppercase}
@@ -104,22 +145,30 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .b-deb{background:var(--green-dim);color:var(--green)}
 .b-in{background:var(--green-dim);color:var(--green)}
 
-/* SECTION */
-.sec{font-size:11px;font-weight:500;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;margin:20px 0 8px}
+/* SEC */
+.sec{font-size:11px;font-weight:500;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;margin:18px 0 8px}
 .sec:first-child{margin-top:4px}
 
 /* FAB */
-.fab{position:fixed;bottom:calc(var(--nav-h) + 16px);right:calc(50% - 240px + 16px);width:52px;height:52px;border-radius:50%;background:var(--gold);color:#0a0a0f;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 24px rgba(201,169,110,0.35);transition:transform .2s,box-shadow .2s;font-weight:300}
-.fab:active{transform:scale(.93)}
+.fab{position:fixed;bottom:calc(var(--nav-h)+16px);right:calc(50% - 240px + 16px);width:52px;height:52px;border-radius:50%;background:var(--gold);color:#0a0a0f;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 24px rgba(201,169,110,0.35);transition:transform .2s;font-weight:300}
+.fab:active{transform:scale(.92)}
 @media(max-width:480px){.fab{right:16px}}
 
-/* MODAL / SHEET */
+/* OVERLAY / SHEET */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .overlay.open{display:flex}
-.sheet{background:var(--bg2);border-radius:20px 20px 0 0;border:1px solid var(--border2);border-bottom:none;padding:0 20px 40px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.4,0,.2,1)}
+.sheet{background:var(--bg2);border-radius:20px 20px 0 0;border:1px solid var(--border2);border-bottom:none;padding:0 20px 40px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;animation:slideUp .25s cubic-bezier(.4,0,.2,1)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sh-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 20px}
-.sh-title{font-family:var(--font-display);font-size:22px;margin-bottom:22px}
+.sh-title{font-family:var(--font-display);font-size:22px;margin-bottom:20px}
+
+/* CONFIRM DIALOG */
+.confirm-box{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border2);padding:24px 20px;width:calc(100% - 32px);max-width:340px;margin:auto auto 40px}
+.confirm-title{font-size:16px;font-weight:500;margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.confirm-btns{display:flex;gap:8px}
+.btn-cancel{flex:1;padding:12px;border-radius:var(--radius-sm);background:none;border:1px solid var(--border);color:var(--text2);font-size:14px;font-family:var(--font-body);cursor:pointer}
+.btn-danger{flex:1;padding:12px;border-radius:var(--radius-sm);background:var(--red-dim);border:1px solid rgba(248,113,113,0.3);color:var(--red);font-size:14px;font-weight:500;font-family:var(--font-body);cursor:pointer}
 
 /* FORM */
 .fg{margin-bottom:16px}
@@ -134,9 +183,12 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chip{padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:none;cursor:pointer;font-size:13px;font-family:var(--font-body);color:var(--text2);transition:all .15s;white-space:nowrap}
 .chip.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);font-weight:500}
-.btn-main{width:100%;padding:15px;border-radius:var(--radius-sm);background:var(--gold);color:#0a0a0f;border:none;font-size:15px;font-weight:500;font-family:var(--font-body);cursor:pointer;margin-top:8px;transition:opacity .15s}
+.date-btns{display:flex;gap:7px;margin-bottom:8px}
+.date-btn{padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:none;cursor:pointer;font-size:12px;font-family:var(--font-body);color:var(--text2);transition:all .15s}
+.date-btn.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+.btn-main{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--gold);color:#0a0a0f;border:none;font-size:15px;font-weight:500;font-family:var(--font-body);cursor:pointer;margin-top:8px;transition:opacity .15s}
 .btn-main:active{opacity:.85}
-.btn-ghost{width:100%;padding:13px;border-radius:var(--radius-sm);background:none;color:var(--text2);border:1px solid var(--border);font-size:14px;font-family:var(--font-body);cursor:pointer;margin-top:8px}
+.btn-ghost{width:100%;padding:12px;border-radius:var(--radius-sm);background:none;color:var(--text2);border:1px solid var(--border);font-size:14px;font-family:var(--font-body);cursor:pointer;margin-top:8px}
 
 /* DFC */
 .dfc-wrap{overflow-x:auto}
@@ -149,16 +201,16 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .dfc-table .now-row td{background:rgba(201,169,110,0.05)}
 .dfc-table .now-row td:first-child{color:var(--gold)}
 
-/* VENCIMENTOS */
-.venc-card{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;margin-bottom:8px;transition:border-color .2s}
+/* VENC */
+.venc-card{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;margin-bottom:8px}
 .venc-card.urgent{border-color:rgba(251,191,36,.3)}
 .venc-day-box{width:40px;height:40px;border-radius:10px;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
 .venc-day-num{font-size:17px;font-weight:500;line-height:1}
 .venc-day-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
 .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.dot-ok{background:var(--green)} .dot-soon{background:var(--amber)} .dot-in{background:var(--blue)}
+.dot-ok{background:var(--green)}.dot-soon{background:var(--amber)}.dot-in{background:var(--blue)}
 
-/* CONCILIAÇÃO */
+/* CONC */
 .conc-status{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px}
 .cs-ok{background:var(--green-dim);color:var(--green)}
 .cs-warn{background:var(--amber-dim);color:var(--amber)}
@@ -168,165 +220,192 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .conc-row:last-child{border-bottom:none}
 .conc-key{color:var(--text3)}
 .conc-val{font-weight:500}
-.card-chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:3px 8px;border-radius:6px;font-weight:500;letter-spacing:.3px}
-.cc-mc{background:rgba(248,113,113,0.15);color:var(--red)}
-.cc-visa{background:var(--blue-dim);color:var(--blue)}
+.cc-mc{background:rgba(248,113,113,0.15);color:var(--red);font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500}
+.cc-visa{background:var(--blue-dim);color:var(--blue);font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500}
 
-/* INVESTIMENTOS */
+/* INVEST */
 .inv-hero{background:linear-gradient(135deg,#0f1a14 0%,#141f10 100%);border:1px solid rgba(74,222,128,0.15);border-radius:var(--radius);padding:20px;margin-bottom:10px;position:relative;overflow:hidden}
 .inv-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(74,222,128,0.1) 0%,transparent 70%);pointer-events:none}
 .inv-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
-.inv-asset-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.inv-asset-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .inv-rend{font-size:13px;font-weight:500}
-.inv-rend.pos{color:var(--green)} .inv-rend.neg{color:var(--red)}
+.inv-rend.pos{color:var(--green)}.inv-rend.neg{color:var(--red)}
+.inv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
 .inv-mini-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
 .inv-mini-val{font-size:14px;font-weight:500}
-.inv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
 .aporte-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .aporte-item:last-child{border-bottom:none}
 
 /* CONFIG */
 .config-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer}
 .config-row:last-child{border-bottom:none}
-.config-row-name{font-size:14px}
-.config-row-sub{font-size:12px;color:var(--text3);margin-top:2px}
 .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
 .cat-item{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;cursor:pointer;transition:border-color .15s}
 .cat-item:hover{border-color:var(--border2)}
 .add-cat{display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:11px;cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px}
 .add-cat:hover{color:var(--gold);border-color:var(--gold)}
 
-/* DEL BTN */
-.del-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;font-size:18px;transition:color .15s;line-height:1;flex-shrink:0}
+/* UTIL */
+.del-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px 6px;font-size:18px;transition:color .15s;line-height:1;flex-shrink:0}
 .del-btn:hover{color:var(--red)}
-
-/* TOAST */
-.toast{position:fixed;bottom:calc(var(--nav-h) + 80px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:10px 18px;font-size:13px;color:var(--text);z-index:300;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
+.edit-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px 6px;font-size:14px;transition:color .15s;line-height:1;flex-shrink:0}
+.edit-btn:hover{color:var(--blue)}
+.toast{position:fixed;bottom:calc(var(--nav-h)+80px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:10px 18px;font-size:13px;color:var(--text);z-index:300;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
 .empty{text-align:center;padding:28px 20px;color:var(--text3)}
 .empty-icon{font-size:28px;margin-bottom:8px}
 .empty-text{font-size:13px}
-.divider{height:1px;background:var(--border);margin:4px 0 14px}
+.hv{transition:filter .2s}
+.hv.hidden{filter:blur(7px);user-select:none}
 </style>
 </head>
 <body>
+
+<!-- PIN -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-logo">Finanças</div>
+  <div class="pin-sub">Pedro Medina</div>
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn ghost"></button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-err" id="pin-err">PIN incorreto</div>
+</div>
+
 <div class="app">
-
-<!-- TOPBAR -->
-<div class="topbar">
-  <div>
-    <div class="topbar-greeting">Pedro Medina</div>
-    <div class="topbar-title" id="topbar-title">Março 2026</div>
-  </div>
-  <div class="month-nav">
-    <button onclick="mudarMes(-1)">‹</button>
-    <span class="month-label" id="mes-label">Mar 2026</span>
-    <button onclick="mudarMes(1)">›</button>
-  </div>
-</div>
-
-<!-- ══ DASHBOARD ══ -->
-<div class="screen active" id="screen-dash">
-  <div class="pill-row">
-    <button class="pill active" data-v="meu" onclick="setVisao(this)">Meu bolso</button>
-    <button class="pill" data-v="real" onclick="setVisao(this)">Custo real</button>
-    <button class="pill" data-v="caixa" onclick="setVisao(this)">Caixa</button>
-    <button class="pill" data-v="comp" onclick="setVisao(this)">Competência</button>
-  </div>
-  <div class="hero">
-    <div class="hero-label">Saldo disponível</div>
-    <div class="hero-value pos" id="h-saldo">R$ 0</div>
-    <div class="hero-meta">
-      <div class="hero-meta-item"><span class="hml">Receita</span><span class="hmv mv-green" id="h-rec">R$ 0</span></div>
-      <div class="hero-meta-item"><span class="hml">Gastos</span><span class="hmv mv-red" id="h-gas">R$ 0</span></div>
-      <div class="hero-meta-item"><span class="hml">Investido</span><span class="hmv mv-gold" id="h-inv">R$ 0</span></div>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <span class="tb-greeting">Pedro Medina</span>
+      <span class="tb-title" id="topbar-title">Março 2026</span>
+    </div>
+    <div class="tb-right">
+      <span class="sync-dot" id="sync-dot" title="Firebase sync"></span>
+      <button class="icon-btn" id="eye-btn" onclick="toggleHide()" title="Ocultar valores">👁</button>
+      <div class="month-nav">
+        <button onclick="mudarMes(-1)">‹</button>
+        <span class="month-label" id="mes-label">Mar 2026</span>
+        <button onclick="mudarMes(1)">›</button>
+      </div>
     </div>
   </div>
-  <div class="card"><div class="card-title">Por categoria</div><div id="cat-bars"></div></div>
-  <div class="card"><div class="card-title">Lançamentos</div><div id="lista-lancs"></div></div>
-</div>
 
-<!-- ══ FIXOS ══ -->
-<div class="screen" id="screen-fixos">
-  <div class="sec">Receitas mensais</div>
-  <div class="card" id="lista-rec"></div>
-  <div class="sec">Gastos fixos — Meu</div>
-  <div class="card" id="lista-fixos-eu"></div>
-  <div class="sec">Gastos fixos — Cassiano</div>
-  <div class="card" id="lista-fixos-pai"></div>
-  <button class="btn-ghost" style="margin-top:12px" onclick="abrirSheetFixo()">+ Adicionar gasto fixo</button>
-  <button class="btn-ghost" style="margin-top:8px" onclick="addReceita()">+ Adicionar receita</button>
-</div>
-
-<!-- ══ VENCIMENTOS ══ -->
-<div class="screen" id="screen-venc">
-  <div class="sec">Calendário do mês</div>
-  <div id="lista-venc"></div>
-</div>
-
-<!-- ══ DFC ══ -->
-<div class="screen" id="screen-dfc">
-  <div class="pill-row">
-    <button class="pill active" data-d="caixa" onclick="setDFC(this)">Caixa</button>
-    <button class="pill" data-d="comp" onclick="setDFC(this)">Competência</button>
-  </div>
-  <div class="card"><div class="card-title">Fluxo — Pedro</div><div class="dfc-wrap"><table class="dfc-table" id="dfc-eu"></table></div></div>
-  <div class="card"><div class="card-title">Fluxo — Custo real (inclui Cassiano)</div><div class="dfc-wrap"><table class="dfc-table" id="dfc-real"></table></div></div>
-</div>
-
-<!-- ══ CONCILIAÇÃO ══ -->
-<div class="screen" id="screen-conc">
-  <div class="sec">Cartões cadastrados</div>
-  <div class="card" id="conc-cartoes"></div>
-  <div class="sec">Conciliação do mês</div>
-  <div class="card" id="conc-mes"></div>
-  <div class="sec">Histórico</div>
-  <div class="card" id="conc-hist"></div>
-</div>
-
-<!-- ══ INVESTIMENTOS ══ -->
-<div class="screen" id="screen-inv">
-  <div class="inv-hero">
-    <div class="hero-label">Patrimônio total</div>
-    <div class="hero-value pos" id="inv-total">R$ 0</div>
-    <div class="hero-meta">
-      <div class="hero-meta-item"><span class="hml">Aportado</span><span class="hmv" id="inv-aport">R$ 0</span></div>
-      <div class="hero-meta-item"><span class="hml">Rendimento</span><span class="hmv" id="inv-rend">R$ 0</span></div>
-      <div class="hero-meta-item"><span class="hml">Retorno</span><span class="hmv" id="inv-pct">0%</span></div>
+  <!-- DASHBOARD -->
+  <div class="screen active" id="screen-dash">
+    <div class="pill-row">
+      <button class="pill active" data-v="meu" onclick="setVisao(this)">Meu bolso</button>
+      <button class="pill" data-v="real" onclick="setVisao(this)">Custo real</button>
+      <button class="pill" data-v="caixa" onclick="setVisao(this)">Caixa</button>
+      <button class="pill" data-v="comp" onclick="setVisao(this)">Competência</button>
     </div>
+    <div class="hero">
+      <div class="hero-label">Saldo disponível</div>
+      <div class="hero-value hv-pos hv" id="h-saldo">R$ 0</div>
+      <div class="hero-meta">
+        <div class="hmi"><span class="hml">Receita</span><span class="hmv mv-g hv" id="h-rec">R$ 0</span></div>
+        <div class="hmi"><span class="hml">Gastos</span><span class="hmv mv-r hv" id="h-gas">R$ 0</span></div>
+        <div class="hmi"><span class="hml">Investido</span><span class="hmv mv-gold hv" id="h-inv">R$ 0</span></div>
+      </div>
+    </div>
+    <div id="prev-month-card"></div>
+    <div id="proj-card"></div>
+    <div class="card"><div class="card-title">Por categoria</div><div id="cat-bars"></div></div>
+    <div class="card"><div class="card-title">Lançamentos</div><div id="lista-lancs"></div></div>
   </div>
-  <div id="inv-ativos"></div>
-  <button class="btn-ghost" style="margin-top:4px" onclick="abrirSheetAtivo()">+ Novo ativo</button>
+
+  <!-- FIXOS -->
+  <div class="screen" id="screen-fixos">
+    <div class="sec">Receitas mensais</div>
+    <div class="card" id="lista-rec"></div>
+    <div class="sec">Gastos fixos — Meu</div>
+    <div class="card" id="lista-fixos-eu"></div>
+    <div class="sec">Gastos fixos — Cassiano</div>
+    <div class="card" id="lista-fixos-pai"></div>
+    <button class="btn-ghost" style="margin-top:12px" onclick="abrirSheetFixo(null)">+ Adicionar gasto fixo</button>
+    <button class="btn-ghost" style="margin-top:8px" onclick="addReceita()">+ Adicionar receita</button>
+  </div>
+
+  <!-- VENCIMENTOS -->
+  <div class="screen" id="screen-venc">
+    <div class="sec">Calendário do mês</div>
+    <div id="lista-venc"></div>
+  </div>
+
+  <!-- DFC -->
+  <div class="screen" id="screen-dfc">
+    <div class="pill-row">
+      <button class="pill active" data-d="caixa" onclick="setDFC(this)">Caixa</button>
+      <button class="pill" data-d="comp" onclick="setDFC(this)">Competência</button>
+    </div>
+    <div class="card"><div class="card-title">Fluxo — Pedro</div><div class="dfc-wrap"><table class="dfc-table" id="dfc-eu"></table></div></div>
+    <div class="card"><div class="card-title">Fluxo — Custo real</div><div class="dfc-wrap"><table class="dfc-table" id="dfc-real"></table></div></div>
+  </div>
+
+  <!-- CONCILIAÇÃO -->
+  <div class="screen" id="screen-conc">
+    <div class="sec">Cartões cadastrados</div>
+    <div class="card" id="conc-cartoes"></div>
+    <div class="sec">Conciliação do mês</div>
+    <div class="card" id="conc-mes"></div>
+    <div class="sec">Histórico</div>
+    <div class="card" id="conc-hist"></div>
+  </div>
+
+  <!-- INVESTIMENTOS -->
+  <div class="screen" id="screen-inv">
+    <div class="inv-hero">
+      <div class="hero-label">Patrimônio total</div>
+      <div class="hero-value hv-pos hv" id="inv-total">R$ 0</div>
+      <div class="hero-meta">
+        <div class="hmi"><span class="hml">Aportado</span><span class="hmv hv" id="inv-aport">R$ 0</span></div>
+        <div class="hmi"><span class="hml">Rendimento</span><span class="hmv hv" id="inv-rend">R$ 0</span></div>
+        <div class="hmi"><span class="hml">Retorno</span><span class="hmv hv" id="inv-pct">0%</span></div>
+      </div>
+    </div>
+    <div id="inv-ativos"></div>
+    <button class="btn-ghost" style="margin-top:4px" onclick="abrirSheetAtivo()">+ Novo ativo</button>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="screen" id="screen-config">
+    <div class="sec">Categorias</div>
+    <div class="cat-grid" id="cat-grid"></div>
+    <div class="add-cat" onclick="addCat()">+ Nova categoria</div>
+    <div class="sec" style="margin-top:24px">Cartões de crédito</div>
+    <div class="card" id="config-cartoes"></div>
+    <button class="btn-ghost" style="margin-top:8px" onclick="addCartao()">+ Adicionar cartão</button>
+    <div class="sec" style="margin-top:20px">Dados</div>
+    <div class="card">
+      <div class="config-row" onclick="exportJSON()"><div><div style="font-size:14px">Exportar backup (JSON)</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Salvar todos os dados</div></div><span style="color:var(--text3)">↓</span></div>
+      <div class="config-row" onclick="document.getElementById('imp-in').click()"><div><div style="font-size:14px">Importar backup</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Restaurar de arquivo JSON</div></div><span style="color:var(--text3)">↑</span></div>
+      <div class="config-row" onclick="exportCSV()"><div><div style="font-size:14px">Exportar planilha (CSV)</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Lançamentos do mês</div></div><span style="color:var(--text3)">↓</span></div>
+    </div>
+    <input type="file" id="imp-in" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
 </div>
 
-<!-- ══ CONFIG ══ -->
-<div class="screen" id="screen-config">
-  <div class="sec">Categorias</div>
-  <div class="cat-grid" id="cat-grid"></div>
-  <div class="add-cat" onclick="addCat()">+ Nova categoria</div>
-  <div class="sec" style="margin-top:24px">Cartões de crédito</div>
-  <div class="card" id="config-cartoes"></div>
-  <button class="btn-ghost" style="margin-top:8px" onclick="addCartao()">+ Adicionar cartão</button>
-  <div class="sec" style="margin-top:20px">Dados</div>
-  <div class="card">
-    <div class="config-row" onclick="exportJSON()"><div><div class="config-row-name">Exportar backup (JSON)</div><div class="config-row-sub">Salvar todos os dados</div></div><span style="color:var(--text3);font-size:18px">↓</span></div>
-    <div class="config-row" onclick="document.getElementById('imp-in').click()"><div><div class="config-row-name">Importar backup</div><div class="config-row-sub">Restaurar de arquivo JSON</div></div><span style="color:var(--text3);font-size:18px">↑</span></div>
-    <div class="config-row" onclick="exportCSV()"><div><div class="config-row-name">Exportar planilha (CSV)</div><div class="config-row-sub">Lançamentos do mês atual</div></div><span style="color:var(--text3);font-size:18px">↓</span></div>
-  </div>
-  <input type="file" id="imp-in" accept=".json" style="display:none" onchange="importJSON(event)">
-</div>
+<button class="fab" onclick="abrirSheet(null)">+</button>
 
-</div><!-- /app -->
-
-<button class="fab" onclick="abrirSheet()">+</button>
-
-<!-- ══ MODAL LANÇAMENTO ══ -->
+<!-- MODAL LANÇAMENTO -->
 <div class="overlay" id="ov-lanc">
 <div class="sheet">
   <div class="sh-handle"></div>
-  <div class="sh-title">Novo lançamento</div>
+  <div class="sh-title" id="lanc-title">Novo lançamento</div>
   <div class="valor-wrap">
     <span class="valor-prefix">R$</span>
     <input class="valor-inp" type="number" id="inp-val" placeholder="0" inputmode="decimal" step="0.01">
@@ -339,14 +418,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
       <button class="chip" id="chip-cred" onclick="setFP('credito',this)">Crédito</button>
     </div>
   </div>
-  <div class="fg" id="g-cartao" style="display:none">
-    <span class="fl">Qual cartão?</span>
-    <div class="chips" id="chips-cartao"></div>
-  </div>
-  <div class="fg" id="g-fatura" style="display:none">
-    <span class="fl">Mês da fatura</span>
-    <input class="fi" type="month" id="inp-fat">
-  </div>
+  <div class="fg" id="g-cartao" style="display:none"><span class="fl">Qual cartão?</span><div class="chips" id="chips-cartao"></div></div>
+  <div class="fg" id="g-fatura" style="display:none"><span class="fl">Mês da fatura</span><input class="fi" type="month" id="inp-fat"></div>
   <div class="fg">
     <span class="fl">Pago por</span>
     <div class="chips">
@@ -354,18 +427,26 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
       <button class="chip" id="chip-pai" onclick="setPag('cassiano',this)">Cassiano</button>
     </div>
   </div>
-  <div class="fg"><span class="fl">Data</span><input class="fi" type="date" id="inp-data"></div>
+  <div class="fg">
+    <span class="fl">Data</span>
+    <div class="date-btns">
+      <button class="date-btn" onclick="setDataBtn('hoje',this)">Hoje</button>
+      <button class="date-btn" onclick="setDataBtn('ontem',this)">Ontem</button>
+      <button class="date-btn" onclick="setDataBtn('outro',this)">Outra</button>
+    </div>
+    <input class="fi" type="date" id="inp-data" style="display:none">
+  </div>
   <div class="fg"><span class="fl">Descrição (opcional)</span><input class="fi" type="text" id="inp-desc" placeholder="Ex: iFood, Uber, Mercado..."></div>
   <button class="btn-main" onclick="salvarLanc()">Registrar</button>
   <button class="btn-ghost" onclick="fecharSheet('ov-lanc')">Cancelar</button>
 </div>
 </div>
 
-<!-- ══ MODAL GASTO FIXO ══ -->
+<!-- MODAL GASTO FIXO -->
 <div class="overlay" id="ov-fixo">
 <div class="sheet">
   <div class="sh-handle"></div>
-  <div class="sh-title">Gasto fixo</div>
+  <div class="sh-title" id="fixo-title">Gasto fixo</div>
   <div class="fg"><span class="fl">Descrição</span><input class="fi" type="text" id="fixo-desc" placeholder="Ex: Netflix, Seguro..."></div>
   <div class="fg"><span class="fl">Valor mensal (0 = variável)</span><input class="fi" type="number" id="fixo-val" placeholder="0" inputmode="decimal"></div>
   <div class="fg"><span class="fl">Dia de vencimento (0 = sem data)</span><input class="fi" type="number" id="fixo-dia" placeholder="0" min="0" max="31"></div>
@@ -378,12 +459,13 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     <button class="chip on" id="fixo-chip-deb" onclick="setFixoFP('debito',this)">Débito / Pix</button>
     <button class="chip" id="fixo-chip-cred" onclick="setFixoFP('credito',this)">Crédito</button>
   </div></div>
+  <input type="hidden" id="fixo-edit-id">
   <button class="btn-main" onclick="salvarFixo()">Salvar</button>
   <button class="btn-ghost" onclick="fecharSheet('ov-fixo')">Cancelar</button>
 </div>
 </div>
 
-<!-- ══ MODAL APORTE ══ -->
+<!-- MODAL APORTE -->
 <div class="overlay" id="ov-aporte">
 <div class="sheet">
   <div class="sh-handle"></div>
@@ -393,22 +475,19 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     <input class="valor-inp" type="number" id="aporte-val" placeholder="0" inputmode="decimal" step="0.01">
   </div>
   <div class="fg"><span class="fl">Data do aporte</span><input class="fi" type="date" id="aporte-data"></div>
-  <div class="fg"><span class="fl">Observação (opcional)</span><input class="fi" type="text" id="aporte-obs" placeholder="Ex: Compra mensal, DCA..."></div>
+  <div class="fg"><span class="fl">Observação (opcional)</span><input class="fi" type="text" id="aporte-obs" placeholder="Ex: DCA mensal..."></div>
   <button class="btn-main" onclick="salvarAporte()">Registrar aporte</button>
   <button class="btn-ghost" onclick="fecharSheet('ov-aporte')">Cancelar</button>
 </div>
 </div>
 
-<!-- ══ MODAL NOVO ATIVO ══ -->
+<!-- MODAL NOVO ATIVO -->
 <div class="overlay" id="ov-ativo">
 <div class="sheet">
   <div class="sh-handle"></div>
   <div class="sh-title">Novo ativo</div>
-  <div class="fg"><span class="fl">Nome</span><input class="fi" type="text" id="ativo-nome" placeholder="Ex: Bitcoin, CDB Nubank, BOVA11..."></div>
-  <div class="fg">
-    <span class="fl">Tipo</span>
-    <div class="chips" id="ativo-tipo-chips"></div>
-  </div>
+  <div class="fg"><span class="fl">Nome</span><input class="fi" type="text" id="ativo-nome" placeholder="Ex: Bitcoin, CDB Nubank..."></div>
+  <div class="fg"><span class="fl">Tipo</span><div class="chips" id="ativo-tipo-chips"></div></div>
   <div class="fg"><span class="fl">Valor atual (R$)</span><input class="fi" type="number" id="ativo-atual" placeholder="0" inputmode="decimal"></div>
   <div class="fg"><span class="fl">Ícone (emoji)</span><input class="fi" type="text" id="ativo-icon" placeholder="₿" maxlength="4"></div>
   <button class="btn-main" onclick="salvarAtivo()">Criar ativo</button>
@@ -416,28 +495,33 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 </div>
 </div>
 
-<!-- ══ MODAL CONCILIAÇÃO ══ -->
+<!-- MODAL CONCILIAÇÃO -->
 <div class="overlay" id="ov-conc">
 <div class="sheet">
   <div class="sh-handle"></div>
   <div class="sh-title" id="conc-title">Conciliar mês</div>
   <div id="conc-faturas-form"></div>
-  <div class="fg" style="margin-top:8px">
-    <span class="fl">Saldo real Itaú (extrato)</span>
-    <input class="fi" type="number" id="conc-saldo-real" placeholder="0,00" inputmode="decimal" step="0.01">
-  </div>
-  <div class="fg">
-    <span class="fl">Observação</span>
-    <input class="fi" type="text" id="conc-obs" placeholder="Ex: Encontrei compra esquecida...">
-  </div>
+  <div class="fg" style="margin-top:8px"><span class="fl">Saldo real Itaú (extrato)</span><input class="fi" type="number" id="conc-saldo-real" placeholder="0,00" inputmode="decimal" step="0.01"></div>
+  <div class="fg"><span class="fl">Observação</span><input class="fi" type="text" id="conc-obs" placeholder="Ex: Encontrei compra esquecida..."></div>
   <button class="btn-main" onclick="salvarConc()">Salvar conciliação</button>
   <button class="btn-ghost" onclick="fecharSheet('ov-conc')">Cancelar</button>
 </div>
 </div>
 
+<!-- CONFIRM DIALOG -->
+<div class="overlay" id="ov-confirm">
+<div class="confirm-box">
+  <div class="confirm-title" id="confirm-title">Confirmar</div>
+  <div class="confirm-msg" id="confirm-msg">Tem certeza?</div>
+  <div class="confirm-btns">
+    <button class="btn-cancel" onclick="fecharSheet('ov-confirm')">Cancelar</button>
+    <button class="btn-danger" id="confirm-ok">Excluir</button>
+  </div>
+</div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<!-- NAV -->
 <nav class="nav">
   <button class="nav-btn active" onclick="irPara('dash',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Início
@@ -475,12 +559,13 @@ const firebaseConfig = {
   appId: "1:866829462575:web:a792d832137cfd0247eada"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
 const DOC_REF = doc(db, "financas", "pedro");
 
-// ═══════════════════════════════ DATA ═══════════════════════════════
+// ═══ CONSTANTS ═══
 const KEY = 'pfpedro_v3';
+const PIN = '1441';
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const MESES_F = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const DIAS_SEM = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -507,6 +592,7 @@ const FIXOS_DEF = [
   {id:'f7',desc:'Diarista',valor:860,dia:0,cat:'moradia',pag:'cassiano',fp:'debito'},
   {id:'f8',desc:'Gás',valor:0,dia:0,cat:'moradia',pag:'eu',fp:'debito'},
   {id:'f9',desc:'ENEL',valor:0,dia:0,cat:'moradia',pag:'eu',fp:'debito'},
+  {id:'f10',desc:'Parcela celular',valor:344,dia:25,cat:'outros',pag:'eu',fp:'debito'},
 ];
 
 const REC_DEF = [
@@ -524,13 +610,13 @@ const ATIVOS_DEF = [
   {id:'a1',nome:'Bitcoin',tipo:'Cripto',icon:'₿',cor:'#f59e0b',aportes:[],valorAtual:0},
 ];
 
-const LANCS_HISTORICO = [{"id": "l_m001", "data": "2026-03-27", "valor": 30.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "PIX Felipe", "fatura": null, "cartaoId": null}, {"id": "l_m002", "data": "2026-03-26", "valor": 215.0, "cat": "moradia", "fp": "debito", "pag": "cassiano", "desc": "Diarista (repasse)", "fatura": null, "cartaoId": null}, {"id": "l_m003", "data": "2026-03-25", "valor": 8.0, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Nova (lanchonete)", "fatura": null, "cartaoId": null}, {"id": "l_m004", "data": "2026-03-24", "valor": 54.9, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Panacota", "fatura": null, "cartaoId": null}, {"id": "l_m005", "data": "2026-03-23", "valor": 19.99, "cat": "saude", "fp": "debito", "pag": "eu", "desc": "Drogaria", "fatura": null, "cartaoId": null}, {"id": "l_m006", "data": "2026-03-23", "valor": 104.34, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "Vivo Internet (variável)", "fatura": null, "cartaoId": null}, {"id": "l_m007", "data": "2026-03-23", "valor": 11.0, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Nova", "fatura": null, "cartaoId": null}, {"id": "l_m008", "data": "2026-03-23", "valor": 27.29, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "Companhia de Gás", "fatura": null, "cartaoId": null}, {"id": "l_m009", "data": "2026-03-23", "valor": 146.0, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercado (Pix Marketplace)", "fatura": null, "cartaoId": null}, {"id": "l_m010", "data": "2026-03-23", "valor": 2.9, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Seg Transação Protegida", "fatura": null, "cartaoId": null}, {"id": "l_m011", "data": "2026-03-19", "valor": 45.9, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Parque", "fatura": null, "cartaoId": null}, {"id": "l_m012", "data": "2026-03-19", "valor": 8.9, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Parque", "fatura": null, "cartaoId": null}, {"id": "l_m013", "data": "2026-03-17", "valor": 35.99, "cat": "saude", "fp": "debito", "pag": "eu", "desc": "Top Fit / Academia extra", "fatura": null, "cartaoId": null}, {"id": "l_m014", "data": "2026-03-17", "valor": 215.0, "cat": "moradia", "fp": "debito", "pag": "cassiano", "desc": "Diarista (repasse)", "fatura": null, "cartaoId": null}, {"id": "l_m015", "data": "2026-03-16", "valor": 135.64, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Amazon", "fatura": null, "cartaoId": null}, {"id": "l_m016", "data": "2026-03-16", "valor": 33.8, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Moonlight (streaming)", "fatura": null, "cartaoId": null}, {"id": "l_m017", "data": "2026-03-16", "valor": 39.99, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Via Play (streaming)", "fatura": null, "cartaoId": null}, {"id": "l_m018", "data": "2026-03-13", "valor": 32.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Grupo", "fatura": null, "cartaoId": null}, {"id": "l_m019", "data": "2026-03-13", "valor": 4.9, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercê", "fatura": null, "cartaoId": null}, {"id": "l_m020", "data": "2026-03-10", "valor": 215.0, "cat": "moradia", "fp": "debito", "pag": "cassiano", "desc": "Diarista (repasse)", "fatura": null, "cartaoId": null}, {"id": "l_m021", "data": "2026-03-09", "valor": 53.9, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "NcAla (restaurante)", "fatura": null, "cartaoId": null}, {"id": "l_m022", "data": "2026-03-06", "valor": 293.8, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "MOMA (restaurante)", "fatura": null, "cartaoId": null}, {"id": "l_m023", "data": "2026-03-06", "valor": 10.31, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Seguro Cartão", "fatura": null, "cartaoId": null}, {"id": "l_m024", "data": "2026-03-04", "valor": 85.61, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "ENEL", "fatura": null, "cartaoId": null}, {"id": "l_m025", "data": "2026-03-04", "valor": 86.17, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "ENEL", "fatura": null, "cartaoId": null}, {"id": "l_m026", "data": "2026-03-03", "valor": 35.9, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Manai (restaurante)", "fatura": null, "cartaoId": null}, {"id": "l_m027", "data": "2026-03-03", "valor": 215.0, "cat": "moradia", "fp": "debito", "pag": "cassiano", "desc": "Diarista (repasse)", "fatura": null, "cartaoId": null}, {"id": "l_m028", "data": "2026-03-02", "valor": 150.29, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Novo", "fatura": null, "cartaoId": null}, {"id": "l_m029", "data": "2026-03-24", "valor": 130.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "PIX Cassiano (transitório)", "fatura": null, "cartaoId": null}, {"id": "l_f001", "data": "2026-02-26", "valor": 60.54, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Sabor (restaurante)", "fatura": null, "cartaoId": null}, {"id": "l_f002", "data": "2026-02-25", "valor": 344.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Parcela celular (Cassiano)", "fatura": null, "cartaoId": null}, {"id": "l_f003", "data": "2026-02-24", "valor": 215.0, "cat": "moradia", "fp": "debito", "pag": "cassiano", "desc": "Diarista (repasse)", "fatura": null, "cartaoId": null}, {"id": "l_f004", "data": "2026-02-23", "valor": 99.99, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "Vivo Internet", "fatura": null, "cartaoId": null}, {"id": "l_f005", "data": "2026-02-23", "valor": 16.0, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Ponto (lazer)", "fatura": null, "cartaoId": null}, {"id": "l_f006", "data": "2026-02-23", "valor": 7.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Banca", "fatura": null, "cartaoId": null}, {"id": "l_f007", "data": "2026-02-23", "valor": 2.9, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Seg Transação Protegida", "fatura": null, "cartaoId": null}, {"id": "l_f008", "data": "2026-02-20", "valor": 54.9, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Panacota", "fatura": null, "cartaoId": null}, {"id": "l_f009", "data": "2026-02-20", "valor": 14.98, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "Companhia de Gás", "fatura": null, "cartaoId": null}, {"id": "l_f010", "data": "2026-02-18", "valor": 115.47, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercado (Pix Marketplace)", "fatura": null, "cartaoId": null}, {"id": "l_f011", "data": "2026-02-18", "valor": 89.86, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Shopee", "fatura": null, "cartaoId": null}, {"id": "l_f012", "data": "2026-02-12", "valor": 39.99, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Via Play (streaming)", "fatura": null, "cartaoId": null}, {"id": "l_f013", "data": "2026-02-11", "valor": 80.63, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "Vivo Internet", "fatura": null, "cartaoId": null}, {"id": "l_f014", "data": "2026-02-10", "valor": 26.9, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "LPQ (padaria/café)", "fatura": null, "cartaoId": null}, {"id": "l_f015", "data": "2026-02-10", "valor": 215.0, "cat": "moradia", "fp": "debito", "pag": "cassiano", "desc": "Diarista (repasse)", "fatura": null, "cartaoId": null}, {"id": "l_f016", "data": "2026-02-09", "valor": 264.8, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Europa (lazer)", "fatura": null, "cartaoId": null}, {"id": "l_f017", "data": "2026-02-09", "valor": 83.6, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Europa (lazer)", "fatura": null, "cartaoId": null}, {"id": "l_f018", "data": "2026-02-06", "valor": 181.36, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Astor", "fatura": null, "cartaoId": null}, {"id": "l_f019", "data": "2026-02-06", "valor": 9.9, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Seguro Cartão", "fatura": null, "cartaoId": null}, {"id": "l_f020", "data": "2026-02-05", "valor": 54.9, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Panacota", "fatura": null, "cartaoId": null}, {"id": "l_f021", "data": "2026-02-05", "valor": 1200.0, "cat": "investimentos", "fp": "debito", "pag": "eu", "desc": "Bitcoin (Latam Gateway)", "fatura": null, "cartaoId": null}, {"id": "l_f022", "data": "2026-02-03", "valor": 1500.0, "cat": "investimentos", "fp": "debito", "pag": "eu", "desc": "Bitcoin (Gowd)", "fatura": null, "cartaoId": null}, {"id": "l_f023", "data": "2026-02-03", "valor": 215.0, "cat": "moradia", "fp": "debito", "pag": "cassiano", "desc": "Diarista (repasse)", "fatura": null, "cartaoId": null}, {"id": "l_f024", "data": "2026-02-02", "valor": 2500.0, "cat": "investimentos", "fp": "debito", "pag": "eu", "desc": "Bitcoin (Gowd)", "fatura": null, "cartaoId": null}, {"id": "l_f025", "data": "2026-02-02", "valor": 24.02, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercado (Pix Marketplace)", "fatura": null, "cartaoId": null}, {"id": "l_f026", "data": "2026-02-02", "valor": 13.05, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "Gás (Comgás)", "fatura": null, "cartaoId": null}, {"id": "l_j001", "data": "2026-01-30", "valor": 44.85, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Shopee", "fatura": null, "cartaoId": null}, {"id": "l_j002", "data": "2026-01-29", "valor": 52.95, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Amazon", "fatura": null, "cartaoId": null}, {"id": "l_j003", "data": "2026-01-29", "valor": 146.3, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercado (Pix Marketplace)", "fatura": null, "cartaoId": null}, {"id": "l_j004", "data": "2026-01-29", "valor": 8.44, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercê", "fatura": null, "cartaoId": null}, {"id": "l_j005", "data": "2026-01-28", "valor": 215.0, "cat": "moradia", "fp": "debito", "pag": "cassiano", "desc": "Diarista (repasse)", "fatura": null, "cartaoId": null}, {"id": "l_j006", "data": "2026-01-27", "valor": 179.58, "cat": "transporte", "fp": "debito", "pag": "eu", "desc": "Passagem ônibus (viagem)", "fatura": null, "cartaoId": null}, {"id": "l_j007", "data": "2026-01-27", "valor": 96.27, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercado (Pix Marketplace)", "fatura": null, "cartaoId": null}, {"id": "l_j008", "data": "2026-01-26", "valor": 344.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Parcela celular (Cassiano)", "fatura": null, "cartaoId": null}, {"id": "l_j009", "data": "2026-01-23", "valor": 91.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Leand", "fatura": null, "cartaoId": null}, {"id": "l_j010", "data": "2026-01-23", "valor": 2.9, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Seg Transação Protegida", "fatura": null, "cartaoId": null}, {"id": "l_j011", "data": "2026-01-22", "valor": 39.99, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Via Play (streaming)", "fatura": null, "cartaoId": null}, {"id": "l_j012", "data": "2026-01-21", "valor": 15.0, "cat": "lazer", "fp": "debito", "pag": "eu", "desc": "Ponto (lazer)", "fatura": null, "cartaoId": null}, {"id": "l_j013", "data": "2026-01-20", "valor": 40.78, "cat": "moradia", "fp": "debito", "pag": "eu", "desc": "ENEL", "fatura": null, "cartaoId": null}, {"id": "l_j014", "data": "2026-01-19", "valor": 3.45, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercê", "fatura": null, "cartaoId": null}, {"id": "l_j015", "data": "2026-01-19", "valor": 24.88, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Keeta Delivery", "fatura": null, "cartaoId": null}, {"id": "l_j016", "data": "2026-01-16", "valor": 54.9, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Panacota", "fatura": null, "cartaoId": null}, {"id": "l_j017", "data": "2026-01-16", "valor": 9.93, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Mercê", "fatura": null, "cartaoId": null}, {"id": "l_j018", "data": "2026-01-14", "valor": 114.13, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Amazon", "fatura": null, "cartaoId": null}, {"id": "l_j019", "data": "2026-01-14", "valor": 100.97, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Shopee", "fatura": null, "cartaoId": null}, {"id": "l_j020", "data": "2026-01-12", "valor": 30.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Luiz Carlos", "fatura": null, "cartaoId": null}, {"id": "l_j021", "data": "2026-01-12", "valor": 38.1, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Pão de Açúcar", "fatura": null, "cartaoId": null}, {"id": "l_j022", "data": "2026-01-12", "valor": 105.62, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Shopee", "fatura": null, "cartaoId": null}, {"id": "l_j023", "data": "2026-01-12", "valor": 33.99, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "Restaurante", "fatura": null, "cartaoId": null}, {"id": "l_j024", "data": "2026-01-09", "valor": 30.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Adivania", "fatura": null, "cartaoId": null}, {"id": "l_j025", "data": "2026-01-08", "valor": 25.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Luiz Carlos", "fatura": null, "cartaoId": null}, {"id": "l_j026", "data": "2026-01-07", "valor": 25.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Luiz Carlos", "fatura": null, "cartaoId": null}, {"id": "l_j027", "data": "2026-01-06", "valor": 74.29, "cat": "alimentacao", "fp": "debito", "pag": "eu", "desc": "O Aristocrata (restaurante)", "fatura": null, "cartaoId": null}, {"id": "l_j028", "data": "2026-01-06", "valor": 25.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Luiz Carlos", "fatura": null, "cartaoId": null}, {"id": "l_j029", "data": "2026-01-06", "valor": 9.9, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Seguro Cartão", "fatura": null, "cartaoId": null}, {"id": "l_j030", "data": "2026-01-05", "valor": 290.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "PIX Pedro H", "fatura": null, "cartaoId": null}, {"id": "l_j031", "data": "2026-01-05", "valor": 80.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Malha (roupa)", "fatura": null, "cartaoId": null}, {"id": "l_j032", "data": "2026-01-05", "valor": 28.0, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Valdenice", "fatura": null, "cartaoId": null}, {"id": "l_f027", "data": "2026-02-05", "valor": 1719.89, "cat": "outros", "fp": "debito", "pag": "eu", "desc": "Sispag Nunca Parar", "fatura": null, "cartaoId": null}];
-const BITCOIN_APORTES = [{"id": "ap_b001", "valor": 2500.0, "data": "2026-02-02", "obs": "Aporte Bitcoin (Gowd)"}, {"id": "ap_b002", "valor": 1500.0, "data": "2026-02-03", "obs": "Aporte Bitcoin (Gowd)"}, {"id": "ap_b003", "valor": 1200.0, "data": "2026-02-05", "obs": "Aporte Bitcoin (Latam Gateway)"}];
+const LANCS_HIST = [{"id":"l_m001","data":"2026-03-27","valor":30.0,"cat":"outros","fp":"debito","pag":"eu","desc":"PIX Felipe","fatura":null,"cartaoId":null},{"id":"l_m002","data":"2026-03-26","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_m003","data":"2026-03-25","valor":8.0,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Nova (lanchonete)","fatura":null,"cartaoId":null},{"id":"l_m004","data":"2026-03-24","valor":54.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Panacota","fatura":null,"cartaoId":null},{"id":"l_m005","data":"2026-03-23","valor":19.99,"cat":"saude","fp":"debito","pag":"eu","desc":"Drogaria","fatura":null,"cartaoId":null},{"id":"l_m006","data":"2026-03-23","valor":104.34,"cat":"moradia","fp":"debito","pag":"eu","desc":"Vivo Internet (variável)","fatura":null,"cartaoId":null},{"id":"l_m007","data":"2026-03-23","valor":11.0,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Nova","fatura":null,"cartaoId":null},{"id":"l_m008","data":"2026-03-23","valor":27.29,"cat":"moradia","fp":"debito","pag":"eu","desc":"Companhia de Gás","fatura":null,"cartaoId":null},{"id":"l_m009","data":"2026-03-23","valor":146.0,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_m010","data":"2026-03-23","valor":2.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seg Transação Protegida","fatura":null,"cartaoId":null},{"id":"l_m011","data":"2026-03-19","valor":45.9,"cat":"lazer","fp":"debito","pag":"eu","desc":"Parque","fatura":null,"cartaoId":null},{"id":"l_m012","data":"2026-03-19","valor":8.9,"cat":"lazer","fp":"debito","pag":"eu","desc":"Parque","fatura":null,"cartaoId":null},{"id":"l_m013","data":"2026-03-17","valor":35.99,"cat":"saude","fp":"debito","pag":"eu","desc":"Top Fit","fatura":null,"cartaoId":null},{"id":"l_m014","data":"2026-03-17","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_m015","data":"2026-03-16","valor":135.64,"cat":"outros","fp":"debito","pag":"eu","desc":"Amazon","fatura":null,"cartaoId":null},{"id":"l_m016","data":"2026-03-16","valor":33.8,"cat":"lazer","fp":"debito","pag":"eu","desc":"Moonlight (streaming)","fatura":null,"cartaoId":null},{"id":"l_m017","data":"2026-03-16","valor":39.99,"cat":"lazer","fp":"debito","pag":"eu","desc":"Via Play (streaming)","fatura":null,"cartaoId":null},{"id":"l_m018","data":"2026-03-13","valor":32.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Grupo","fatura":null,"cartaoId":null},{"id":"l_m019","data":"2026-03-13","valor":4.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercê","fatura":null,"cartaoId":null},{"id":"l_m020","data":"2026-03-10","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_m021","data":"2026-03-09","valor":53.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"NcAla (restaurante)","fatura":null,"cartaoId":null},{"id":"l_m022","data":"2026-03-06","valor":293.8,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"MOMA (restaurante)","fatura":null,"cartaoId":null},{"id":"l_m023","data":"2026-03-06","valor":10.31,"cat":"outros","fp":"debito","pag":"eu","desc":"Seguro Cartão","fatura":null,"cartaoId":null},{"id":"l_m024","data":"2026-03-04","valor":85.61,"cat":"moradia","fp":"debito","pag":"eu","desc":"ENEL","fatura":null,"cartaoId":null},{"id":"l_m025","data":"2026-03-04","valor":86.17,"cat":"moradia","fp":"debito","pag":"eu","desc":"ENEL","fatura":null,"cartaoId":null},{"id":"l_m026","data":"2026-03-03","valor":35.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Manai (restaurante)","fatura":null,"cartaoId":null},{"id":"l_m027","data":"2026-03-03","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_m028","data":"2026-03-02","valor":150.29,"cat":"outros","fp":"debito","pag":"eu","desc":"Novo","fatura":null,"cartaoId":null},{"id":"l_m029","data":"2026-03-24","valor":130.0,"cat":"outros","fp":"debito","pag":"eu","desc":"PIX Cassiano","fatura":null,"cartaoId":null},{"id":"l_f001","data":"2026-02-26","valor":60.54,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Sabor (restaurante)","fatura":null,"cartaoId":null},{"id":"l_f002","data":"2026-02-25","valor":344.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Parcela celular","fatura":null,"cartaoId":null},{"id":"l_f003","data":"2026-02-24","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_f004","data":"2026-02-23","valor":99.99,"cat":"moradia","fp":"debito","pag":"eu","desc":"Vivo Internet","fatura":null,"cartaoId":null},{"id":"l_f005","data":"2026-02-23","valor":16.0,"cat":"lazer","fp":"debito","pag":"eu","desc":"Ponto (lazer)","fatura":null,"cartaoId":null},{"id":"l_f006","data":"2026-02-23","valor":7.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Banca","fatura":null,"cartaoId":null},{"id":"l_f007","data":"2026-02-23","valor":2.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seg Transação Protegida","fatura":null,"cartaoId":null},{"id":"l_f008","data":"2026-02-20","valor":54.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Panacota","fatura":null,"cartaoId":null},{"id":"l_f009","data":"2026-02-20","valor":14.98,"cat":"moradia","fp":"debito","pag":"eu","desc":"Companhia de Gás","fatura":null,"cartaoId":null},{"id":"l_f010","data":"2026-02-18","valor":115.47,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_f011","data":"2026-02-18","valor":89.86,"cat":"outros","fp":"debito","pag":"eu","desc":"Shopee","fatura":null,"cartaoId":null},{"id":"l_f012","data":"2026-02-12","valor":39.99,"cat":"lazer","fp":"debito","pag":"eu","desc":"Via Play (streaming)","fatura":null,"cartaoId":null},{"id":"l_f013","data":"2026-02-11","valor":80.63,"cat":"moradia","fp":"debito","pag":"eu","desc":"Vivo Internet","fatura":null,"cartaoId":null},{"id":"l_f014","data":"2026-02-10","valor":26.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"LPQ (padaria)","fatura":null,"cartaoId":null},{"id":"l_f015","data":"2026-02-10","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_f016","data":"2026-02-09","valor":264.8,"cat":"lazer","fp":"debito","pag":"eu","desc":"Europa (lazer)","fatura":null,"cartaoId":null},{"id":"l_f017","data":"2026-02-09","valor":83.6,"cat":"lazer","fp":"debito","pag":"eu","desc":"Europa (lazer)","fatura":null,"cartaoId":null},{"id":"l_f018","data":"2026-02-06","valor":181.36,"cat":"outros","fp":"debito","pag":"eu","desc":"Astor","fatura":null,"cartaoId":null},{"id":"l_f019","data":"2026-02-06","valor":9.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seguro Cartão","fatura":null,"cartaoId":null},{"id":"l_f020","data":"2026-02-05","valor":54.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Panacota","fatura":null,"cartaoId":null},{"id":"l_f021","data":"2026-02-05","valor":1200.0,"cat":"investimentos","fp":"debito","pag":"eu","desc":"Bitcoin (Latam Gateway)","fatura":null,"cartaoId":null},{"id":"l_f022","data":"2026-02-03","valor":1500.0,"cat":"investimentos","fp":"debito","pag":"eu","desc":"Bitcoin (Gowd)","fatura":null,"cartaoId":null},{"id":"l_f023","data":"2026-02-03","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_f024","data":"2026-02-02","valor":2500.0,"cat":"investimentos","fp":"debito","pag":"eu","desc":"Bitcoin (Gowd)","fatura":null,"cartaoId":null},{"id":"l_f025","data":"2026-02-02","valor":24.02,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_f026","data":"2026-02-02","valor":13.05,"cat":"moradia","fp":"debito","pag":"eu","desc":"Gás (Comgás)","fatura":null,"cartaoId":null},{"id":"l_j001","data":"2026-01-30","valor":44.85,"cat":"outros","fp":"debito","pag":"eu","desc":"Shopee","fatura":null,"cartaoId":null},{"id":"l_j002","data":"2026-01-29","valor":52.95,"cat":"outros","fp":"debito","pag":"eu","desc":"Amazon","fatura":null,"cartaoId":null},{"id":"l_j003","data":"2026-01-29","valor":146.3,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_j004","data":"2026-01-29","valor":8.44,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercê","fatura":null,"cartaoId":null},{"id":"l_j005","data":"2026-01-28","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_j006","data":"2026-01-27","valor":179.58,"cat":"transporte","fp":"debito","pag":"eu","desc":"Passagem ônibus (viagem)","fatura":null,"cartaoId":null},{"id":"l_j007","data":"2026-01-27","valor":96.27,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_j008","data":"2026-01-26","valor":344.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Parcela celular","fatura":null,"cartaoId":null},{"id":"l_j009","data":"2026-01-23","valor":91.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Leand","fatura":null,"cartaoId":null},{"id":"l_j010","data":"2026-01-23","valor":2.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seg Transação Protegida","fatura":null,"cartaoId":null},{"id":"l_j011","data":"2026-01-22","valor":39.99,"cat":"lazer","fp":"debito","pag":"eu","desc":"Via Play (streaming)","fatura":null,"cartaoId":null},{"id":"l_j012","data":"2026-01-21","valor":15.0,"cat":"lazer","fp":"debito","pag":"eu","desc":"Ponto (lazer)","fatura":null,"cartaoId":null},{"id":"l_j013","data":"2026-01-20","valor":40.78,"cat":"moradia","fp":"debito","pag":"eu","desc":"ENEL","fatura":null,"cartaoId":null},{"id":"l_j014","data":"2026-01-19","valor":3.45,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercê","fatura":null,"cartaoId":null},{"id":"l_j015","data":"2026-01-19","valor":24.88,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Keeta Delivery","fatura":null,"cartaoId":null},{"id":"l_j016","data":"2026-01-16","valor":54.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Panacota","fatura":null,"cartaoId":null},{"id":"l_j017","data":"2026-01-16","valor":9.93,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercê","fatura":null,"cartaoId":null},{"id":"l_j018","data":"2026-01-14","valor":114.13,"cat":"outros","fp":"debito","pag":"eu","desc":"Amazon","fatura":null,"cartaoId":null},{"id":"l_j019","data":"2026-01-14","valor":100.97,"cat":"outros","fp":"debito","pag":"eu","desc":"Shopee","fatura":null,"cartaoId":null},{"id":"l_j020","data":"2026-01-12","valor":30.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Luiz Carlos","fatura":null,"cartaoId":null},{"id":"l_j021","data":"2026-01-12","valor":38.1,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Pão de Açúcar","fatura":null,"cartaoId":null},{"id":"l_j022","data":"2026-01-12","valor":105.62,"cat":"outros","fp":"debito","pag":"eu","desc":"Shopee","fatura":null,"cartaoId":null},{"id":"l_j023","data":"2026-01-12","valor":33.99,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Restaurante","fatura":null,"cartaoId":null},{"id":"l_j024","data":"2026-01-09","valor":30.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Adivania","fatura":null,"cartaoId":null},{"id":"l_j025","data":"2026-01-08","valor":25.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Luiz Carlos","fatura":null,"cartaoId":null},{"id":"l_j026","data":"2026-01-07","valor":25.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Luiz Carlos","fatura":null,"cartaoId":null},{"id":"l_j027","data":"2026-01-06","valor":74.29,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"O Aristocrata (restaurante)","fatura":null,"cartaoId":null},{"id":"l_j028","data":"2026-01-06","valor":25.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Luiz Carlos","fatura":null,"cartaoId":null},{"id":"l_j029","data":"2026-01-06","valor":9.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seguro Cartão","fatura":null,"cartaoId":null},{"id":"l_j030","data":"2026-01-05","valor":290.0,"cat":"outros","fp":"debito","pag":"eu","desc":"PIX Pedro H","fatura":null,"cartaoId":null},{"id":"l_j031","data":"2026-01-05","valor":80.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Malha (roupa)","fatura":null,"cartaoId":null},{"id":"l_j032","data":"2026-01-05","valor":28.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Valdenice","fatura":null,"cartaoId":null},{"id":"l_f027","data":"2026-02-05","valor":1719.89,"cat":"outros","fp":"debito","pag":"eu","desc":"Sispag Nunca Parar","fatura":null,"cartaoId":null}];
+const BTC_APORTES = [{"id":"ap_b001","valor":2500.0,"data":"2026-02-02","obs":"Aporte Bitcoin (Gowd)"},{"id":"ap_b002","valor":1500.0,"data":"2026-02-03","obs":"Aporte Bitcoin (Gowd)"},{"id":"ap_b003","valor":1200.0,"data":"2026-02-05","obs":"Aporte Bitcoin (Latam Gateway)"}];
 
 function defaultState() {
   const ativos = JSON.parse(JSON.stringify(ATIVOS_DEF));
-  ativos[0].aportes = [...BITCOIN_APORTES];
-  return {lancs:[...LANCS_HISTORICO],fixos:[...FIXOS_DEF],receitas:[...REC_DEF],cats:[...CATS_DEF],cartoes:[...CARTOES_DEF],ativos:ativos,conciliacoes:[]};
+  ativos[0].aportes = [...BTC_APORTES];
+  return {lancs:[...LANCS_HIST],fixos:[...FIXOS_DEF],receitas:[...REC_DEF],cats:[...CATS_DEF],cartoes:[...CARTOES_DEF],ativos,conciliacoes:[]};
 }
 function load() {
   try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch(e){}
@@ -539,58 +625,40 @@ function load() {
 async function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify(st));
+    setSyncStatus('syncing');
     await setDoc(DOC_REF, {data: JSON.stringify(st)});
-  } catch(e){ console.error('Save error:', e); toast('Erro ao salvar'); }
-}
-async function syncFromFirebase() {
-  try {
-    const snap = await getDoc(DOC_REF);
-    if (snap.exists()) {
-      const remote = JSON.parse(snap.data().data);
-      st = remote;
-      localStorage.setItem(KEY, JSON.stringify(st));
-      renderAll();
-      toast('Dados sincronizados ✓');
-    }
-  } catch(e) { console.error('Sync error:', e); }
-}
-function startRealtimeSync() {
-  onSnapshot(DOC_REF, (snap) => {
-    if (snap.exists()) {
-      const remote = JSON.parse(snap.data().data);
-      st = remote;
-      localStorage.setItem(KEY, JSON.stringify(st));
-      renderAll();
-    }
-  });
+    setSyncStatus('ok');
+  } catch(e) { setSyncStatus('error'); console.error(e); }
 }
 
 let st = load();
 let mesAtual = new Date().getMonth();
 let anoAtual = new Date().getFullYear();
 let visao = 'meu', visaoDFC = 'caixa';
-let fFP='debito', fPag='eu', fCat='alimentacao', fCartao=null;
+let fFP='debito', fPag='eu', fCat='alimentacao', fCartao=null, fEditId=null;
 let xFP='debito', xPag='eu', xCat='moradia';
 let ativoAtualId=null, ativoTipoSel='Cripto';
+let valoresOcultos = false;
+let pinEntrada = '';
+let dataBtnSel = 'hoje';
 
-// ═══════════════════════════════ UTILS ═══════════════════════════════
+// ═══ UTILS ═══
 function fmt(v){ return 'R$ '+Math.round(v||0).toLocaleString('pt-BR'); }
-function fmtDec(v){ return 'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function mesKey(m,a){ return a+'-'+String(m+1).padStart(2,'0'); }
 function getCat(id){ return st.cats.find(c=>c.id===id)||{label:'Outros',icon:'✦',cor:'#94a3b8'}; }
 function getCartao(id){ return st.cartoes.find(c=>c.id===id)||null; }
+function todayStr(){ return new Date().toISOString().split('T')[0]; }
+function yesterdayStr(){ const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().split('T')[0]; }
 
 function getLancs(m,a,mode){
   const key=mesKey(m,a);
   return st.lancs.filter(l=>{
     if(!l.data) return false;
-    if(mode==='comp') return l.fatura ? l.fatura===key : l.data.startsWith(key);
+    if(mode==='comp') return l.fatura?l.fatura===key:l.data.startsWith(key);
     return l.data.startsWith(key);
   });
 }
-
 function totalReceitas(){ return st.receitas.reduce((s,r)=>s+(r.valor||0),0); }
-
 function calcMes(m,a,vis){
   const mode=(vis==='comp')?'comp':'caixa';
   const lancs=getLancs(m,a,mode);
@@ -601,31 +669,114 @@ function calcMes(m,a,vis){
   const totalVar=src.filter(l=>l.cat!=='investimentos').reduce((s,l)=>s+(l.valor||0),0);
   const totalInv=src.filter(l=>l.cat==='investimentos').reduce((s,l)=>s+(l.valor||0),0);
   const totalRec=totalReceitas();
-  return {totalRec,totalFix,totalVar,totalInv,saldo:totalRec-totalFix-totalVar-totalInv,src,euL};
+  return {totalRec,totalFix,totalVar,totalInv,saldo:totalRec-totalFix-totalVar-totalInv,src};
 }
 
-// ═══════════════════════════════ RENDER DASHBOARD ═══════════════════
+// ═══ SYNC STATUS ═══
+function setSyncStatus(s){
+  const d=document.getElementById('sync-dot');
+  if(!d) return;
+  d.className='sync-dot'+(s==='syncing'?' syncing':s==='error'?' error':'');
+}
+
+// ═══ PIN ═══
+function pinPress(d){
+  if(pinEntrada.length>=4) return;
+  pinEntrada+=d;
+  for(let i=0;i<4;i++) document.getElementById('pd'+i).className='pin-dot'+(i<pinEntrada.length?' filled':'');
+  if(pinEntrada.length===4){
+    if(pinEntrada===PIN){
+      document.getElementById('pin-screen').style.display='none';
+    } else {
+      const dots=document.getElementById('pin-dots');
+      dots.classList.add('shake');
+      document.getElementById('pin-dots').querySelectorAll('.pin-dot').forEach(d=>d.classList.add('shake'));
+      document.getElementById('pin-err').classList.add('show');
+      setTimeout(()=>{
+        pinEntrada='';
+        for(let i=0;i<4;i++) document.getElementById('pd'+i).className='pin-dot';
+        dots.classList.remove('shake');
+        document.getElementById('pin-err').classList.remove('show');
+      },700);
+    }
+  }
+}
+function pinDel(){
+  if(!pinEntrada.length) return;
+  pinEntrada=pinEntrada.slice(0,-1);
+  for(let i=0;i<4;i++) document.getElementById('pd'+i).className='pin-dot'+(i<pinEntrada.length?' filled':'');
+}
+window.pinPress=pinPress; window.pinDel=pinDel;
+
+// ═══ HIDE VALUES ═══
+function toggleHide(){
+  valoresOcultos=!valoresOcultos;
+  document.querySelectorAll('.hv').forEach(el=>el.classList.toggle('hidden',valoresOcultos));
+  document.getElementById('eye-btn').textContent=valoresOcultos?'🙈':'👁';
+}
+window.toggleHide=toggleHide;
+
+// ═══ RENDER DASHBOARD ═══
 function renderDash(){
   const {totalRec,totalFix,totalVar,totalInv,saldo,src}=calcMes(mesAtual,anoAtual,visao);
+  const totalGastos=totalFix+totalVar;
   const hS=document.getElementById('h-saldo');
-  hS.textContent=fmt(saldo); hS.className='hero-value '+(saldo>=0?'pos':'neg');
+  hS.textContent=fmt(saldo); hS.className='hero-value hv '+(saldo>=0?'hv-pos':'hv-neg');
+  if(valoresOcultos) hS.classList.add('hidden');
   document.getElementById('h-rec').textContent=fmt(totalRec);
-  document.getElementById('h-gas').textContent=fmt(totalFix+totalVar);
+  document.getElementById('h-gas').textContent=fmt(totalGastos);
   document.getElementById('h-inv').textContent=fmt(totalInv);
 
+  // Previous month card
+  let pm=mesAtual-1, pa=anoAtual;
+  if(pm<0){pm=11;pa--;}
+  const prev=calcMes(pm,pa,'meu');
+  document.getElementById('prev-month-card').innerHTML=`
+    <div class="prev-card">
+      <div class="prev-icon">📊</div>
+      <div class="prev-body">
+        <div class="prev-title">${MESES[pm]} ${pa} — fechamento</div>
+        <div class="prev-row">
+          <div class="prev-item"><span class="prev-lbl">Receita</span><span class="prev-val mv-g hv">${fmt(prev.totalRec)}</span></div>
+          <div class="prev-item"><span class="prev-lbl">Gastos</span><span class="prev-val mv-r hv">${fmt(prev.totalFix+prev.totalVar)}</span></div>
+          <div class="prev-item"><span class="prev-lbl">Saldo</span><span class="prev-val hv" style="color:${prev.saldo>=0?'var(--gold)':'var(--red)'}">${fmt(prev.saldo)}</span></div>
+        </div>
+      </div>
+    </div>`;
+
+  // Projection card
+  const hoje=new Date();
+  const diasNoMes=new Date(anoAtual,mesAtual+1,0).getDate();
+  const diaHoje=mesAtual===hoje.getMonth()&&anoAtual===hoje.getFullYear()?hoje.getDate():diasNoMes;
+  const gastoAteHoje=totalFix+totalVar;
+  const projecao=diasNoMes>0?Math.round(gastoAteHoje/diaHoje*diasNoMes):gastoAteHoje;
+  const pct=Math.min(Math.round(gastoAteHoje/totalRec*100),100);
+  const barColor=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
+  document.getElementById('proj-card').innerHTML=`
+    <div class="proj-card">
+      <div class="proj-title">Projeção do mês</div>
+      <div class="proj-row"><span class="proj-key">Gasto até hoje</span><span class="hv">${fmt(gastoAteHoje)}</span></div>
+      <div class="proj-row"><span class="proj-key">Projeção final</span><span class="hv" style="color:${barColor}">${fmt(projecao)}</span></div>
+      <div class="proj-row"><span class="proj-key">Saldo projetado</span><span class="hv" style="color:${totalRec-projecao>=0?'var(--green)':'var(--red)'}">${fmt(totalRec-projecao)}</span></div>
+      <div class="proj-bar-track"><div class="proj-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+    </div>`;
+
+  // Reapply hidden state
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
+
+  // Cat bars
   const porCat={};
   st.cats.forEach(c=>porCat[c.id]=0);
   st.fixos.filter(f=>visao==='real'?true:f.pag==='eu').forEach(f=>{if(f.valor&&porCat[f.cat]!==undefined)porCat[f.cat]+=f.valor;});
   src.filter(l=>l.cat!=='investimentos').forEach(l=>{if(porCat[l.cat]!==undefined)porCat[l.cat]+=(l.valor||0);});
   const maxV=Math.max(...Object.values(porCat),1);
-
-  document.getElementById('cat-bars').innerHTML=st.cats.filter(c=>porCat[c.id]>0)
-    .sort((a,b)=>porCat[b.id]-porCat[a.id])
+  document.getElementById('cat-bars').innerHTML=st.cats.filter(c=>porCat[c.id]>0).sort((a,b)=>porCat[b.id]-porCat[a.id])
     .map(c=>`<div class="cat-bar">
-      <div class="cat-bar-head"><span class="cat-bar-name"><span>${c.icon}</span>${c.label}</span><span class="cat-bar-amount">${fmt(porCat[c.id])}</span></div>
+      <div class="cat-bar-head"><span class="cat-bar-name"><span>${c.icon}</span>${c.label}</span><span class="cat-bar-amount hv">${fmt(porCat[c.id])}</span></div>
       <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round(porCat[c.id]/maxV*100)}%;background:${c.cor}"></div></div>
     </div>`).join('')||'<div class="empty"><div class="empty-text">Nenhum gasto no período</div></div>';
 
+  // Transactions
   const recent=[...src].sort((a,b)=>b.data>a.data?1:-1);
   if(!recent.length){document.getElementById('lista-lancs').innerHTML='<div class="empty"><div class="empty-icon">✦</div><div class="empty-text">Nenhum lançamento ainda</div></div>';return;}
   document.getElementById('lista-lancs').innerHTML=recent.map(l=>{
@@ -633,81 +784,79 @@ function renderDash(){
     const dia=l.data?parseInt(l.data.split('-')[2]):'?';
     const fpB=l.fp==='credito'?'<span class="badge b-cred">crédito</span>':'<span class="badge b-deb">débito</span>';
     const pagB=l.pag==='eu'?'<span class="badge b-eu">eu</span>':'<span class="badge b-pai">Cassiano</span>';
-    const cartObj=l.cartaoId&&l.fp==='credito'?getCartao(l.cartaoId):null;
-    const cartB=cartObj?'<span class="card-chip '+(cartObj.tipo==="visa"?'cc-visa':'cc-mc')+'">'+cartObj.nome+'</span>':''
+    const ctObj=l.cartaoId?getCartao(l.cartaoId):null;
+    const ctB=ctObj?'<span class="'+(ctObj.tipo==='visa'?'cc-visa':'cc-mc')+'">'+ctObj.nome+'</span>':'';
     return `<div class="item">
       <div class="item-icon" style="background:${cat.cor}20">${cat.icon}</div>
-      <div class="item-body">
-        <div class="item-name">${l.desc||cat.label}</div>
-        <div class="item-sub">Dia ${dia} ${fpB} ${pagB} ${cartB}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="item-amount ${l.pag==='cassiano'?'ia-dim':''}">${fmt(l.valor)}</div>
-        <button class="del-btn" onclick="delLanc('${l.id}',event)">×</button>
+      <div class="item-body"><div class="item-name">${l.desc||cat.label}</div><div class="item-sub">Dia ${dia} ${fpB}${pagB}${ctB}</div></div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <div class="item-amount ${l.pag==='cassiano'?'ia-dim':''} hv">${fmt(l.valor)}</div>
+        <button class="edit-btn" onclick="abrirSheet('${l.id}')">✎</button>
+        <button class="del-btn" onclick="confirmDel('lanc','${l.id}')">×</button>
       </div>
     </div>`;
   }).join('');
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
 }
 
-// ═══════════════════════════════ RENDER FIXOS ═══════════════════════
+// ═══ RENDER FIXOS ═══
 function renderFixos(){
   function rowF(f){
     const cat=getCat(f.cat);
-    const venc=f.dia>0?`Dia ${f.dia}`:'Débito automático';
+    const venc=f.dia>0?'Dia '+f.dia:'Débito automático';
     const fpB=f.fp==='credito'?'<span class="badge b-cred">crédito</span>':'<span class="badge b-deb">débito</span>';
     return `<div class="item">
       <div class="item-icon" style="background:${cat.cor}20">${cat.icon}</div>
       <div class="item-body"><div class="item-name">${f.desc}</div><div class="item-sub">${venc} ${fpB}</div></div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="item-amount ${f.pag==='cassiano'?'ia-dim':''}">${f.valor>0?fmt(f.valor):'Variável'}</div>
-        <button class="del-btn" onclick="delFixo('${f.id}',event)">×</button>
+      <div style="display:flex;align-items:center;gap:4px">
+        <div class="item-amount ${f.pag==='cassiano'?'ia-dim':''} hv">${f.valor>0?fmt(f.valor):'Variável'}</div>
+        <button class="edit-btn" onclick="abrirSheetFixo('${f.id}')">✎</button>
+        <button class="del-btn" onclick="confirmDel('fixo','${f.id}')">×</button>
       </div>
     </div>`;
   }
   document.getElementById('lista-rec').innerHTML=st.receitas.map(r=>`<div class="item">
     <div class="item-icon" style="background:var(--green-dim)">💰</div>
     <div class="item-body"><div class="item-name">${r.desc}</div><div class="item-sub">Dia ${r.dia} <span class="badge b-in">entrada</span></div></div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div class="item-amount ia-green">${fmt(r.valor)}</div>
-      <button class="del-btn" onclick="delRec('${r.id}',event)">×</button>
+    <div style="display:flex;align-items:center;gap:4px">
+      <div class="item-amount ia-g hv">${fmt(r.valor)}</div>
+      <button class="del-btn" onclick="confirmDel('rec','${r.id}')">×</button>
     </div>
   </div>`).join('')||'<div class="empty"><div class="empty-text">Nenhuma receita</div></div>';
   document.getElementById('lista-fixos-eu').innerHTML=st.fixos.filter(f=>f.pag==='eu').map(rowF).join('')||'<div class="empty"><div class="empty-text">Nenhum</div></div>';
   document.getElementById('lista-fixos-pai').innerHTML=st.fixos.filter(f=>f.pag==='cassiano').map(rowF).join('')||'<div class="empty"><div class="empty-text">Nenhum</div></div>';
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
 }
 
-// ═══════════════════════════════ RENDER VENC ═══════════════════════
+// ═══ RENDER VENC ═══
 function renderVenc(){
   const hoje=new Date().getDate(),mH=new Date().getMonth(),aH=new Date().getFullYear();
   const isAtual=mesAtual===mH&&anoAtual===aH;
   const items=[
     ...st.receitas.map(r=>({dia:r.dia,label:r.desc,tipo:'entrada',valor:r.valor})),
-    ...st.cartoes.map(c=>({dia:c.venc,label:`Fatura ${c.nome}`,tipo:'cartao',valor:null})),
+    ...st.cartoes.map(c=>({dia:c.venc,label:'Fatura '+c.nome,tipo:'cartao',valor:null})),
     ...st.fixos.filter(f=>f.dia>0).map(f=>({dia:f.dia,label:f.desc,tipo:f.pag==='eu'?'eu':'cassiano',valor:f.valor,pag:f.pag}))
   ].sort((a,b)=>a.dia-b.dia);
   if(!items.length){document.getElementById('lista-venc').innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Nenhum vencimento</div></div>';return;}
   document.getElementById('lista-venc').innerHTML=items.map(it=>{
     const diff=isAtual?it.dia-hoje:99;
     const dotCls=it.tipo==='entrada'?'dot-in':(diff<=3&&diff>=-1?'dot-soon':'dot-ok');
-    const urgent=dotCls==='dot-soon';
     const dow=DIAS_SEM[new Date(anoAtual,mesAtual,it.dia).getDay()];
     let badge='';
     if(it.tipo==='entrada') badge='<span class="badge b-in">entrada</span>';
     else if(it.tipo==='cartao') badge='<span class="badge b-cred">fatura</span>';
     else if(it.pag==='eu') badge='<span class="badge b-eu">eu</span>';
     else badge='<span class="badge b-pai">Cassiano</span>';
-    return `<div class="venc-card ${urgent?'urgent':''}">
+    return `<div class="venc-card ${dotCls==='dot-soon'?'urgent':''}">
       <div class="venc-day-box"><div class="venc-day-num">${it.dia}</div><div class="venc-day-lbl">${dow}</div></div>
-      <div style="flex:1">
-        <div style="font-size:14px;font-weight:400">${it.label}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:6px"><span class="dot ${dotCls}"></span>${badge}${urgent&&isAtual?' · Vence em breve':''}</div>
-      </div>
-      <div style="font-size:15px;font-weight:500;color:${it.tipo==='entrada'?'var(--green)':'var(--text)'}">${it.valor>0?fmt(it.valor):'—'}</div>
+      <div style="flex:1"><div style="font-size:14px">${it.label}</div><div style="font-size:11px;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:6px"><span class="dot ${dotCls}"></span>${badge}</div></div>
+      <div style="font-size:15px;font-weight:500;color:${it.tipo==='entrada'?'var(--green)':'var(--text)'}" class="hv">${it.valor>0?fmt(it.valor):'—'}</div>
     </div>`;
   }).join('');
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
 }
 
-// ═══════════════════════════════ RENDER DFC ═══════════════════════
+// ═══ RENDER DFC ═══
 function renderDFC(){
   function build(inclCassiano){
     const fixBase=st.fixos.filter(f=>inclCassiano?true:f.pag==='eu');
@@ -732,166 +881,86 @@ function renderDFC(){
         <td style="color:${saldo>=0?'var(--green)':'var(--red)'}">${fmt(saldo)}</td>
       </tr>`;
     }
-    return `<thead><tr><th>Mês</th><th>Entrada</th><th>Saídas</th><th>Invest.</th><th>Saldo</th></tr></thead><tbody>${rows}</tbody>`;
+    return '<thead><tr><th>Mês</th><th>Entrada</th><th>Saídas</th><th>Invest.</th><th>Saldo</th></tr></thead><tbody>'+rows+'</tbody>';
   }
   document.getElementById('dfc-eu').innerHTML=build(false);
   document.getElementById('dfc-real').innerHTML=build(true);
 }
 
-// ═══════════════════════════════ RENDER CONCILIAÇÃO ═══════════════
+// ═══ RENDER CONC ═══
 function calcSaldoTeorico(m,a){
   const key=mesKey(m,a);
   const lancsEu=st.lancs.filter(l=>l.data&&l.data.startsWith(key)&&l.pag==='eu'&&l.fp!=='credito');
   const totalDeb=lancsEu.reduce((s,l)=>s+(l.valor||0),0);
   const fixDeb=st.fixos.filter(f=>f.pag==='eu'&&f.fp==='debito').reduce((s,f)=>s+(f.valor||0),0);
-  // faturas de crédito que vencem neste mês
   let totalFaturas=0;
   st.cartoes.forEach(c=>{
-    const fatKey=a+'-'+String(m+1).padStart(2,'0');
-    const prev=getLancsFatura(fatKey,c.id);
-    totalFaturas+=prev;
+    totalFaturas+=getLancsFatura(key,c.id);
   });
   const rec=totalReceitas();
-  return {teorico:rec-fixDeb-totalDeb-totalFaturas, rec, fixDeb, totalDeb, totalFaturas};
+  return {teorico:rec-fixDeb-totalDeb-totalFaturas,rec,fixDeb,totalDeb,totalFaturas};
 }
-
 function getLancsFatura(fatKey,cartaoId){
   return st.lancs.filter(l=>l.fp==='credito'&&l.fatura===fatKey&&l.pag==='eu'&&(!cartaoId||l.cartaoId===cartaoId)).reduce((s,l)=>s+(l.valor||0),0);
 }
-
+function buildDivRow(div){
+  if(div===null) return '';
+  var col=Math.abs(div)===0?'var(--green)':Math.abs(div)<=50?'var(--amber)':'var(--red)';
+  return '<div class="conc-row"><span class="conc-key">Divergência</span><span class="conc-val hv" style="color:'+col+'">'+fmt(div)+'</span></div>';
+}
 function renderConc(){
-  // Cartões cadastrados
   document.getElementById('conc-cartoes').innerHTML=st.cartoes.map(c=>`
     <div class="item">
       <div class="item-icon" style="background:${c.tipo==='visa'?'var(--blue-dim)':'var(--red-dim)'}">💳</div>
       <div class="item-body"><div class="item-name">${c.nome}</div><div class="item-sub">Venc. dia ${c.venc}</div></div>
-      <button class="del-btn" onclick="delCartao('${c.id}',event)">×</button>
+      <button class="del-btn" onclick="confirmDel('cartao','${c.id}')">×</button>
     </div>`).join('');
-
-  // Mês atual
   const {teorico,rec,fixDeb,totalDeb,totalFaturas}=calcSaldoTeorico(mesAtual,anoAtual);
   const key=mesKey(mesAtual,anoAtual);
   const concAtual=st.conciliacoes.find(c=>c.key===key);
   const real=concAtual?concAtual.saldoReal:null;
   const div=real!==null?teorico-real:null;
-
-  // Previsão por cartão
   let prevFat='';
   st.cartoes.forEach(c=>{
     const v=getLancsFatura(key,c.id);
-    if(v>0) prevFat+=`<div class="conc-row"><span class="conc-key">Fatura ${c.nome} (prevista)</span><span class="conc-val ia-red">−${fmt(v)}</span></div>`;
+    if(v>0) prevFat+='<div class="conc-row"><span class="conc-key">Fatura '+c.nome+' (prevista)</span><span class="conc-val ia-r hv">−'+fmt(v)+'</span></div>';
   });
-
   let statusHtml='<span class="conc-status cs-open">Pendente</span>';
   if(div!==null){
     if(Math.abs(div)===0) statusHtml='<span class="conc-status cs-ok">✓ Conciliado</span>';
-    else if(Math.abs(div)<=50) statusHtml=`<span class="conc-status cs-warn">⚠ Dif. ${fmt(Math.abs(div))}</span>`;
-    else statusHtml=`<span class="conc-status cs-bad">✗ Dif. ${fmt(Math.abs(div))}</span>`;
+    else if(Math.abs(div)<=50) statusHtml='<span class="conc-status cs-warn">⚠ Dif. '+fmt(Math.abs(div))+'</span>';
+    else statusHtml='<span class="conc-status cs-bad">✗ Dif. '+fmt(Math.abs(div))+'</span>';
   }
-
   document.getElementById('conc-mes').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <span style="font-size:15px;font-weight:500">${MESES_F[mesAtual]} ${anoAtual}</span>
-      ${statusHtml}
+      <span style="font-size:15px;font-weight:500">${MESES_F[mesAtual]} ${anoAtual}</span>${statusHtml}
     </div>
-    <div class="conc-row"><span class="conc-key">Receitas</span><span class="conc-val ia-green">+${fmt(rec)}</span></div>
-    <div class="conc-row"><span class="conc-key">Fixos débito (meu)</span><span class="conc-val ia-red">−${fmt(fixDeb)}</span></div>
-    <div class="conc-row"><span class="conc-key">Variáveis débito (meu)</span><span class="conc-val ia-red">−${fmt(totalDeb)}</span></div>
+    <div class="conc-row"><span class="conc-key">Receitas</span><span class="conc-val ia-g hv">+${fmt(rec)}</span></div>
+    <div class="conc-row"><span class="conc-key">Fixos débito (meu)</span><span class="conc-val ia-r hv">−${fmt(fixDeb)}</span></div>
+    <div class="conc-row"><span class="conc-key">Variáveis débito (meu)</span><span class="conc-val ia-r hv">−${fmt(totalDeb)}</span></div>
     ${prevFat}
     <div class="conc-row" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:12px">
       <span style="font-weight:500">Saldo teórico</span>
-      <span class="conc-val" style="color:${teorico>=0?'var(--green)':'var(--red)'};font-size:16px">${fmt(teorico)}</span>
+      <span class="conc-val hv" style="color:${teorico>=0?'var(--green)':'var(--red)'};font-size:16px">${fmt(teorico)}</span>
     </div>
-    ${real!==null?('<div class="conc-row"><span class="conc-key">Saldo real (extrato)</span><span class="conc-val">'+fmt(real)+'</span></div>'):''}
+    ${real!==null?'<div class="conc-row"><span class="conc-key">Saldo real (extrato)</span><span class="conc-val hv">'+fmt(real)+'</span></div>':''}
     ${buildDivRow(div)}
-    ${concAtual&&concAtual.obs?('<div style="font-size:12px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">Obs: '+concAtual.obs+'</div>'):''}
-    <button class="btn-ghost" style="margin-top:14px" onclick="abrirConc()">
-      ${concAtual?'Editar conciliação':'Conciliar mês'}
-    </button>`;
-
-  // Histórico
+    ${concAtual&&concAtual.obs?'<div style="font-size:12px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">Obs: '+concAtual.obs+'</div>':''}
+    <button class="btn-ghost" style="margin-top:14px" onclick="abrirConc()">${concAtual?'Editar conciliação':'Conciliar mês'}</button>`;
   const hist=st.conciliacoes.filter(c=>c.key!==key).sort((a,b)=>b.key>a.key?1:-1).slice(0,6);
   document.getElementById('conc-hist').innerHTML=hist.length?hist.map(c=>{
     const [a,m]=c.key.split('-');
     const dv=c.teorico-c.saldoReal;
     const stCls=Math.abs(dv)===0?'cs-ok':Math.abs(dv)<=50?'cs-warn':'cs-bad';
     return `<div class="item">
-      <div class="item-body"><div class="item-name">${MESES[parseInt(m)-1]} ${a}</div><div class="item-sub">Teórico ${fmt(c.teorico)} · Real ${fmt(c.saldoReal)}</div></div>
+      <div class="item-body"><div class="item-name">${MESES[parseInt(m)-1]} ${a}</div><div class="item-sub hv">Teórico ${fmt(c.teorico)} · Real ${fmt(c.saldoReal)}</div></div>
       <span class="conc-status ${stCls}" style="font-size:11px">${Math.abs(dv)===0?'✓ OK':'Dif. '+fmt(Math.abs(dv))}</span>
     </div>`;
   }).join(''):'<div class="empty"><div class="empty-text">Nenhuma conciliação anterior</div></div>';
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
 }
 
-function abrirConc(){
-  const key=mesKey(mesAtual,anoAtual);
-  const existing=st.conciliacoes.find(c=>c.key===key);
-  document.getElementById('conc-title').textContent=`Conciliar — ${MESES_F[mesAtual]}`;
-  document.getElementById('conc-saldo-real').value=existing?existing.saldoReal:'';
-  document.getElementById('conc-obs').value=existing?existing.obs:'';
-
-  // Faturas por cartão
-  let fatHtml='';
-  st.cartoes.forEach(c=>{
-    const prev=getLancsFatura(key,c.id);
-    const stored=existing&&existing.faturas?existing.faturas[c.id]||'':'';
-    fatHtml+=`<div class="fg">
-      <span class="fl">Fatura ${c.nome} (previsto: ${fmt(prev)})</span>
-      <input class="fi" type="number" id="fat-${c.id}" value="${stored}" placeholder="${prev||0}" inputmode="decimal" step="0.01">
-    </div>`;
-  });
-  document.getElementById('conc-faturas-form').innerHTML=fatHtml;
-  document.getElementById('ov-conc').classList.add('open');
-}
-
-function salvarConc(){
-  const key=mesKey(mesAtual,anoAtual);
-  const real=parseFloat(document.getElementById('conc-saldo-real').value);
-  if(isNaN(real)){toast('Informe o saldo real');return;}
-  const {teorico}=calcSaldoTeorico(mesAtual,anoAtual);
-  const faturas={};
-  st.cartoes.forEach(c=>{const v=parseFloat(document.getElementById('fat-'+c.id)?.value);if(!isNaN(v))faturas[c.id]=v;});
-  const idx=st.conciliacoes.findIndex(c=>c.key===key);
-  const entry={key,saldoReal:real,teorico,obs:document.getElementById('conc-obs').value,faturas};
-  if(idx>=0) st.conciliacoes[idx]=entry; else st.conciliacoes.push(entry);
-  save();fecharSheet('ov-conc'); renderConc(); toast('Conciliação salva ✓');
-}
-
-function delCartao(id,e){
-  e.stopPropagation();
-  if(!confirm('Remover cartão?'))return;
-  st.cartoes=st.cartoes.filter(c=>c.id!==id);
-  save();renderAll();toast('Removido');
-}
-
-function addCartao(){
-  const nome=prompt('Nome do cartão (ex: Visa 1234):');if(!nome)return;
-  const venc=parseInt(prompt('Dia de vencimento (1-31):'));if(!venc||venc<1||venc>31){toast('Dia inválido');return;}
-  const tipo=prompt('Tipo (mc ou visa):')==='visa'?'visa':'mc';
-  st.cartoes.push({id:'ct'+Date.now(),nome:nome.trim(),venc,tipo});
-  save();renderAll();toast('Cartão adicionado ✓');
-}
-
-// ═══════════════════════════════ RENDER INVESTIMENTOS ═══════════════
-function renderAportes(a){
-  if(!a.aportes||!a.aportes.length) return '';
-  const rows=[...(a.aportes||[])].sort((x,y)=>y.data>x.data?1:-1).slice(0,5).map(function(ap){
-    return '<div class="aporte-item">'
-      +'<div style="flex:1"><div style="font-size:13px">'+(ap.obs||'Aporte')+'</div>'
-      +'<div style="font-size:11px;color:var(--text3)">'+(ap.data||'—')+'</div></div>'
-      +'<div style="font-size:14px;font-weight:500;color:var(--gold)">'+fmt(ap.valor)+'</div>'
-      +'<button class="del-btn" onclick="delAporte(\'' +a.id+ '\',\'' +ap.id+ '\',event)">×</button>'
-      +'</div>';
-  }).join('');
-  return '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
-    +'<div class="card-title" style="margin-bottom:8px">Histórico de aportes</div>'
-    +rows+'</div>';
-}
-
-function buildDivRow(div){
-  if(div===null) return '';
-  var col=Math.abs(div)===0?'var(--green)':Math.abs(div)<=50?'var(--amber)':'var(--red)';
-  return '<div class="conc-row"><span class="conc-key">Divergência</span><span class="conc-val" style="color:'+col+'">'+fmt(div)+'</span></div>';
-}
+// ═══ RENDER INVEST ═══
 function buildAportesHtml(a){
   if(!a.aportes||!a.aportes.length) return '';
   var rows='';
@@ -899,144 +968,56 @@ function buildAportesHtml(a){
   for(var i=0;i<sorted.length;i++){
     var ap=sorted[i];
     rows+='<div class="aporte-item">'
-      +'<div style="flex:1">'
-      +'<div style="font-size:13px">'+(ap.obs||'Aporte')+'</div>'
-      +'<div style="font-size:11px;color:var(--text3)">'+(ap.data||'—')+'</div>'
-      +'</div>'
-      +'<div style="font-size:14px;font-weight:500;color:var(--gold)">'+fmt(ap.valor)+'</div>'
+      +'<div style="flex:1"><div style="font-size:13px">'+(ap.obs||'Aporte')+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+(ap.data||'—')+'</div></div>'
+      +'<div style="font-size:14px;font-weight:500;color:var(--gold)" class="hv">'+fmt(ap.valor)+'</div>'
       +'<button class="del-btn" data-aid="'+a.id+'" data-apid="'+ap.id+'" onclick="handleDelAporte(this,event)">×</button>'
       +'</div>';
   }
   return '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
-    +'<div class="card-title" style="margin-bottom:8px">Histórico de aportes</div>'
-    +rows+'</div>';
+    +'<div class="card-title" style="margin-bottom:8px">Histórico de aportes</div>'+rows+'</div>';
 }
-
 function renderInv(){
   const totalAtual=st.ativos.reduce((s,a)=>s+(a.valorAtual||0),0);
   const totalAport=st.ativos.reduce((s,a)=>s+(a.aportes||[]).reduce((x,ap)=>x+(ap.valor||0),0),0);
   const rend=totalAtual-totalAport;
   const pct=totalAport>0?(rend/totalAport*100):0;
-
   const ih=document.getElementById('inv-total');
-  ih.textContent=fmt(totalAtual); ih.className='hero-value '+(totalAtual>=0?'pos':'neg');
+  ih.textContent=fmt(totalAtual); ih.className='hero-value hv-pos hv'+(valoresOcultos?' hidden':'');
   document.getElementById('inv-aport').textContent=fmt(totalAport);
   const ir=document.getElementById('inv-rend');
-  ir.textContent=fmt(rend); ir.className='hmv '+(rend>=0?'mv-green':'mv-red');
+  ir.textContent=fmt(rend); ir.className='hmv hv '+(rend>=0?'mv-g':'mv-r')+(valoresOcultos?' hidden':'');
   const ip=document.getElementById('inv-pct');
-  ip.textContent=(pct>=0?'+':'')+pct.toFixed(1)+'%'; ip.className='hmv '+(pct>=0?'mv-green':'mv-red');
-
+  ip.textContent=(pct>=0?'+':'')+pct.toFixed(1)+'%'; ip.className='hmv hv '+(pct>=0?'mv-g':'mv-r')+(valoresOcultos?' hidden':'');
   document.getElementById('inv-ativos').innerHTML=st.ativos.map(a=>{
     const totalAp=(a.aportes||[]).reduce((s,ap)=>s+(ap.valor||0),0);
     const rendA=(a.valorAtual||0)-totalAp;
     const pctA=totalAp>0?(rendA/totalAp*100):0;
-    const lastAp=[...(a.aportes||[])].sort((x,y)=>y.data>x.data?1:-1)[0];
+    const lastAp=[].concat(a.aportes||[]).sort(function(x,y){return y.data>x.data?1:-1;})[0];
     return `<div class="inv-card">
-      <div class="inv-asset-header">
-        <div class="inv-asset-icon" style="background:${a.cor||'#f59e0b'}20;color:${a.cor||'#f59e0b'};font-size:22px">${a.icon||'₿'}</div>
-        <div style="flex:1">
-          <div style="font-size:15px;font-weight:500">${a.nome}</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px">${a.tipo}</div>
-        </div>
-        <div class="inv-rend ${rendA>=0?'pos':'neg'}">${rendA>=0?'+':''}${fmt(rendA)} (${pctA>=0?'+':''}${pctA.toFixed(1)}%)</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:40px;height:40px;border-radius:12px;background:${a.cor||'#f59e0b'}20;color:${a.cor||'#f59e0b'};font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${a.icon||'₿'}</div>
+        <div style="flex:1"><div style="font-size:15px;font-weight:500">${a.nome}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${a.tipo}</div></div>
+        <div class="inv-rend ${rendA>=0?'pos':'neg'} hv">${rendA>=0?'+':''}${fmt(rendA)} (${pctA>=0?'+':''}${pctA.toFixed(1)}%)</div>
       </div>
       <div class="inv-grid">
-        <div><div class="inv-mini-label">Aportado</div><div class="inv-mini-val">${fmt(totalAp)}</div></div>
-        <div><div class="inv-mini-label">Atual</div><div class="inv-mini-val" style="color:var(--green)">${fmt(a.valorAtual||0)}</div></div>
+        <div><div class="inv-mini-label">Aportado</div><div class="inv-mini-val hv">${fmt(totalAp)}</div></div>
+        <div><div class="inv-mini-label">Atual</div><div class="inv-mini-val mv-g hv">${fmt(a.valorAtual||0)}</div></div>
         <div><div class="inv-mini-label">Aportes</div><div class="inv-mini-val">${(a.aportes||[]).length}x</div></div>
       </div>
-      ${lastAp?('<div style="font-size:11px;color:var(--text3);margin-top:10px">Último aporte: '+fmt(lastAp.valor)+' em '+(lastAp.data||'—')+'</div>'):''}
+      ${lastAp?'<div style="font-size:11px;color:var(--text3);margin-top:10px">Último aporte: <span class="hv">'+fmt(lastAp.valor)+'</span> em '+(lastAp.data||'—')+'</div>':''}
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn-ghost" style="margin-top:0;flex:1;padding:10px;font-size:13px" onclick="abrirAporte('${a.id}')">+ Aporte</button>
         <button class="btn-ghost" style="margin-top:0;flex:1;padding:10px;font-size:13px" onclick="atualizarValor('${a.id}')">Atualizar valor</button>
-        <button class="del-btn" style="padding:8px" onclick="delAtivo('${a.id}',event)">×</button>
+        <button class="del-btn" style="padding:8px" onclick="confirmDel('ativo','${a.id}')">×</button>
       </div>
       ${buildAportesHtml(a)}
     </div>`;
   }).join('')||'<div class="empty"><div class="empty-icon">📈</div><div class="empty-text">Nenhum ativo cadastrado</div></div>';
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
 }
 
-function abrirAporte(ativoId){
-  ativoAtualId=ativoId;
-  const a=st.ativos.find(x=>x.id===ativoId);
-  document.getElementById('aporte-title').textContent=`Aporte — ${a?a.nome:''}`;
-  document.getElementById('aporte-val').value='';
-  document.getElementById('aporte-obs').value='';
-  document.getElementById('aporte-data').value=new Date().toISOString().split('T')[0];
-  document.getElementById('ov-aporte').classList.add('open');
-  setTimeout(()=>document.getElementById('aporte-val').focus(),300);
-}
-
-function salvarAporte(){
-  const val=parseFloat(document.getElementById('aporte-val').value);
-  if(!val||val<=0){toast('Informe um valor');return;}
-  const a=st.ativos.find(x=>x.id===ativoAtualId);
-  if(!a)return;
-  if(!a.aportes) a.aportes=[];
-  a.aportes.push({id:'ap'+Date.now(),valor:val,data:document.getElementById('aporte-data').value,obs:document.getElementById('aporte-obs').value.trim()});
-  save();fecharSheet('ov-aporte');renderInv();toast('Aporte registrado ✓');
-}
-
-function atualizarValor(id){
-  const a=st.ativos.find(x=>x.id===id);if(!a)return;
-  const v=parseFloat(prompt(`Valor atual de ${a.nome} (R$):`,a.valorAtual||0));
-  if(isNaN(v))return;
-  a.valorAtual=v;save();renderInv();toast('Valor atualizado ✓');
-}
-
-function handleDelAporte(btn,e){
-  e.stopPropagation();
-  var aid=btn.getAttribute('data-aid');
-  var apid=btn.getAttribute('data-apid');
-  delAporte(aid,apid,e);
-}
-function delAporte(ativoId,apId,e){
-  e.stopPropagation();
-  if(!confirm('Remover aporte?'))return;
-  const a=st.ativos.find(x=>x.id===ativoId);if(!a)return;
-  a.aportes=a.aportes.filter(ap=>ap.id!==apId);
-  save();renderInv();toast('Removido');
-}
-
-function delAtivo(id,e){
-  e.stopPropagation();
-  if(!confirm('Remover este ativo?'))return;
-  st.ativos=st.ativos.filter(a=>a.id!==id);
-  save();renderInv();toast('Removido');
-}
-
-function abrirSheetAtivo(){
-  ativoTipoSel='Cripto';
-  document.getElementById('ativo-nome').value='';
-  document.getElementById('ativo-atual').value='';
-  document.getElementById('ativo-icon').value='';
-  document.getElementById('ativo-tipo-chips').innerHTML=TIPOS_INV.map(t=>
-    `<button class="chip ${t==='Cripto'?'on':''}" onclick="setTipoAtivo('${t}',this)">${t}</button>`
-  ).join('');
-  document.getElementById('ov-ativo').classList.add('open');
-}
-
-function setTipoAtivo(t,btn){
-  ativoTipoSel=t;
-  btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-  btn.classList.add('on');
-}
-
-function salvarAtivo(){
-  const nome=document.getElementById('ativo-nome').value.trim();
-  if(!nome){toast('Informe o nome');return;}
-  const cores={Cripto:'#f59e0b','Renda Fixa':'#4ade80',Ações:'#60a5fa',FII:'#a78bfa',Tesouro:'#2dd4bf',Outro:'#94a3b8'};
-  st.ativos.push({
-    id:'a'+Date.now(),nome,tipo:ativoTipoSel,
-    icon:document.getElementById('ativo-icon').value.trim()||'★',
-    cor:cores[ativoTipoSel]||'#94a3b8',
-    valorAtual:parseFloat(document.getElementById('ativo-atual').value)||0,
-    aportes:[]
-  });
-  save();fecharSheet('ov-ativo');renderInv();toast('Ativo criado ✓');
-}
-
-// ═══════════════════════════════ RENDER CONFIG ═══════════════════
+// ═══ RENDER CONFIG ═══
 function renderConfig(){
   document.getElementById('cat-grid').innerHTML=st.cats.map(c=>`
     <div class="cat-item" onclick="editCat('${c.id}')">
@@ -1047,11 +1028,18 @@ function renderConfig(){
     <div class="item">
       <div class="item-icon" style="background:${c.tipo==='visa'?'var(--blue-dim)':'var(--red-dim)'}">💳</div>
       <div class="item-body"><div class="item-name">${c.nome}</div><div class="item-sub">Venc. dia ${c.venc}</div></div>
-      <button class="del-btn" onclick="delCartao('${c.id}',event)">×</button>
+      <button class="del-btn" onclick="confirmDel('cartao','${c.id}')">×</button>
     </div>`).join('')||'<div class="empty"><div class="empty-text">Nenhum cartão</div></div>';
 }
 
-// ═══════════════════════════════ NAVIGATION ═══════════════════════
+// ═══ RENDER ALL ═══
+function renderAll(){
+  document.getElementById('mes-label').textContent=MESES[mesAtual]+' '+anoAtual;
+  document.getElementById('topbar-title').textContent=MESES_F[mesAtual]+' '+anoAtual;
+  renderDash();renderFixos();renderVenc();renderDFC();renderConc();renderInv();renderConfig();
+}
+
+// ═══ NAVIGATION ═══
 function irPara(id,btn){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -1067,37 +1055,63 @@ function mudarMes(d){
 function setVisao(btn){
   visao=btn.dataset.v;
   document.querySelectorAll('[data-v]').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');renderDash();
+  btn.classList.add('active'); renderDash();
 }
 function setDFC(btn){
   visaoDFC=btn.dataset.d;
   document.querySelectorAll('[data-d]').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');renderDFC();
+  btn.classList.add('active'); renderDFC();
 }
 
-// ═══════════════════════════════ MODAL LANÇAMENTO ═══════════════════
-function abrirSheet(){
-  fFP='debito';fPag='eu';fCat='alimentacao';fCartao=null;
-  document.getElementById('inp-val').value='';
-  document.getElementById('inp-desc').value='';
-  document.getElementById('inp-data').value=new Date().toISOString().split('T')[0];
-  document.getElementById('inp-fat').value=mesKey(mesAtual,anoAtual);
-  document.getElementById('g-fatura').style.display='none';
-  document.getElementById('g-cartao').style.display='none';
-  document.getElementById('chip-deb').classList.add('on');
-  document.getElementById('chip-cred').classList.remove('on');
-  document.getElementById('chip-eu').classList.add('on');
-  document.getElementById('chip-pai').classList.remove('on');
-  document.getElementById('chips-cat').innerHTML=st.cats.map(c=>
-    `<button class="chip ${c.id===fCat?'on':''}" onclick="setFCat('${c.id}',this)">${c.icon} ${c.label}</button>`
-  ).join('');
+// ═══ CONFIRM DIALOG ═══
+function confirmDel(tipo,id){
+  const msgs={lanc:'Excluir este lançamento?',fixo:'Remover este gasto fixo?',rec:'Remover esta receita?',ativo:'Remover este ativo?',cartao:'Remover este cartão?'};
+  document.getElementById('confirm-title').textContent='Confirmar exclusão';
+  document.getElementById('confirm-msg').textContent=msgs[tipo]||'Tem certeza?';
+  document.getElementById('confirm-ok').onclick=function(){
+    fecharSheet('ov-confirm');
+    if(tipo==='lanc'){st.lancs=st.lancs.filter(l=>l.id!==id);}
+    else if(tipo==='fixo'){st.fixos=st.fixos.filter(f=>f.id!==id);}
+    else if(tipo==='rec'){if(st.receitas.length<=1){toast('Mantenha ao menos uma receita');return;}st.receitas=st.receitas.filter(r=>r.id!==id);}
+    else if(tipo==='ativo'){st.ativos=st.ativos.filter(a=>a.id!==id);}
+    else if(tipo==='cartao'){st.cartoes=st.cartoes.filter(c=>c.id!==id);}
+    save();renderAll();toast('Removido');
+  };
+  document.getElementById('ov-confirm').classList.add('open');
+}
+
+// ═══ MODAL LANÇAMENTO ═══
+function abrirSheet(editId){
+  fEditId=editId;
+  let l=null;
+  if(editId) l=st.lancs.find(x=>x.id===editId);
+  fFP=l?l.fp:'debito'; fPag=l?l.pag:'eu'; fCat=l?l.cat:'alimentacao'; fCartao=l?l.cartaoId:null;
+  document.getElementById('lanc-title').textContent=editId?'Editar lançamento':'Novo lançamento';
+  document.getElementById('inp-val').value=l?l.valor:'';
+  document.getElementById('inp-desc').value=l?l.desc:'';
+  document.getElementById('inp-fat').value=l&&l.fatura?l.fatura:mesKey(mesAtual,anoAtual);
+  document.getElementById('g-fatura').style.display=fFP==='credito'?'block':'none';
+  document.getElementById('g-cartao').style.display=fFP==='credito'?'block':'none';
+  document.getElementById('chip-deb').classList.toggle('on',fFP==='debito');
+  document.getElementById('chip-cred').classList.toggle('on',fFP==='credito');
+  document.getElementById('chip-eu').classList.toggle('on',fPag==='eu');
+  document.getElementById('chip-pai').classList.toggle('on',fPag==='cassiano');
+  document.getElementById('chips-cat').innerHTML=st.cats.map(c=>`<button class="chip ${c.id===fCat?'on':''}" onclick="setFCat('${c.id}',this)">${c.icon} ${c.label}</button>`).join('');
+  // Date buttons
+  dataBtnSel='hoje';
+  const dataVal=l?l.data:todayStr();
+  if(l){ if(dataVal===todayStr()) dataBtnSel='hoje'; else if(dataVal===yesterdayStr()) dataBtnSel='ontem'; else dataBtnSel='outro'; }
+  document.querySelectorAll('.date-btn').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase()===dataBtnSel||(dataBtnSel==='outro'&&b.textContent==='Outra')));
+  document.getElementById('inp-data').style.display=dataBtnSel==='outro'?'block':'none';
+  document.getElementById('inp-data').value=dataVal;
+  if(fFP==='credito'){
+    document.getElementById('chips-cartao').innerHTML=st.cartoes.map(c=>`<button class="chip ${c.id===fCartao?'on':''}" onclick="setFCartao('${c.id}',this)">${c.nome}</button>`).join('');
+  }
   document.getElementById('ov-lanc').classList.add('open');
   setTimeout(()=>document.getElementById('inp-val').focus(),300);
 }
 function fecharSheet(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.overlay').forEach(ov=>{
-  ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open');});
-});
+document.querySelectorAll('.overlay').forEach(ov=>{ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open');});});
 function setFP(v,btn){
   fFP=v;
   document.getElementById('chip-deb').classList.toggle('on',v==='debito');
@@ -1106,59 +1120,51 @@ function setFP(v,btn){
   document.getElementById('g-cartao').style.display=v==='credito'?'block':'none';
   if(v==='credito'){
     fCartao=st.cartoes[0]?.id||null;
-    document.getElementById('chips-cartao').innerHTML=st.cartoes.map(c=>
-      `<button class="chip ${c.id===fCartao?'on':''}" onclick="setFCartao('${c.id}',this)">${c.nome}</button>`
-    ).join('');
+    document.getElementById('chips-cartao').innerHTML=st.cartoes.map(c=>`<button class="chip ${c.id===fCartao?'on':''}" onclick="setFCartao('${c.id}',this)">${c.nome}</button>`).join('');
   }
 }
-function setFCartao(id,btn){
-  fCartao=id;
-  btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+function setFCartao(id,btn){fCartao=id;btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');}
+function setPag(v,btn){fPag=v;document.getElementById('chip-eu').classList.toggle('on',v==='eu');document.getElementById('chip-pai').classList.toggle('on',v==='cassiano');}
+function setFCat(id,btn){fCat=id;btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');}
+function setDataBtn(v,btn){
+  dataBtnSel=v;
+  document.querySelectorAll('.date-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-}
-function setPag(v,btn){
-  fPag=v;
-  document.getElementById('chip-eu').classList.toggle('on',v==='eu');
-  document.getElementById('chip-pai').classList.toggle('on',v==='cassiano');
-}
-function setFCat(id,btn){
-  fCat=id;
-  btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-  btn.classList.add('on');
+  document.getElementById('inp-data').style.display=v==='outro'?'block':'none';
+  if(v==='hoje') document.getElementById('inp-data').value=todayStr();
+  else if(v==='ontem') document.getElementById('inp-data').value=yesterdayStr();
 }
 function salvarLanc(){
   const val=parseFloat(document.getElementById('inp-val').value);
   if(!val||val<=0){toast('Informe um valor válido');return;}
   if(fFP==='credito'&&!fCartao&&st.cartoes.length>0){toast('Selecione o cartão');return;}
-  st.lancs.push({
-    id:'l'+Date.now(),valor:val,cat:fCat,fp:fFP,pag:fPag,
+  const dataFinal=document.getElementById('inp-data').value||todayStr();
+  const novoL={
+    id:fEditId||('l'+Date.now()),valor:val,cat:fCat,fp:fFP,pag:fPag,
     desc:document.getElementById('inp-desc').value.trim(),
-    data:document.getElementById('inp-data').value,
+    data:dataFinal,
     fatura:fFP==='credito'?document.getElementById('inp-fat').value:null,
     cartaoId:fFP==='credito'?fCartao:null,
-  });
-  save();fecharSheet('ov-lanc');renderAll();toast('Lançamento registrado ✓');
-}
-function delLanc(id,e){
-  e.stopPropagation();
-  if(!confirm('Excluir lançamento?'))return;
-  st.lancs=st.lancs.filter(l=>l.id!==id);
-  save();renderAll();toast('Removido');
+  };
+  if(fEditId){st.lancs=st.lancs.map(l=>l.id===fEditId?novoL:l);}
+  else{st.lancs.push(novoL);}
+  save();fecharSheet('ov-lanc');renderAll();toast(fEditId?'Atualizado ✓':'Registrado ✓');
 }
 
-// ═══════════════════════════════ MODAL FIXO ═══════════════════════
-function abrirSheetFixo(){
-  xFP='debito';xPag='eu';xCat='moradia';
-  document.getElementById('fixo-desc').value='';
-  document.getElementById('fixo-val').value='';
-  document.getElementById('fixo-dia').value='';
-  document.getElementById('fixo-chip-deb').classList.add('on');
-  document.getElementById('fixo-chip-cred').classList.remove('on');
-  document.getElementById('fixo-chip-eu').classList.add('on');
-  document.getElementById('fixo-chip-pai').classList.remove('on');
-  document.getElementById('fixo-chips-cat').innerHTML=st.cats.map(c=>
-    `<button class="chip ${c.id===xCat?'on':''}" onclick="setXCat('${c.id}',this)">${c.icon} ${c.label}</button>`
-  ).join('');
+// ═══ MODAL FIXO ═══
+function abrirSheetFixo(editId){
+  const f=editId?st.fixos.find(x=>x.id===editId):null;
+  xFP=f?f.fp:'debito'; xPag=f?f.pag:'eu'; xCat=f?f.cat:'moradia';
+  document.getElementById('fixo-title').textContent=editId?'Editar gasto fixo':'Novo gasto fixo';
+  document.getElementById('fixo-desc').value=f?f.desc:'';
+  document.getElementById('fixo-val').value=f?f.valor:'';
+  document.getElementById('fixo-dia').value=f?f.dia:'';
+  document.getElementById('fixo-edit-id').value=editId||'';
+  document.getElementById('fixo-chip-deb').classList.toggle('on',xFP==='debito');
+  document.getElementById('fixo-chip-cred').classList.toggle('on',xFP==='credito');
+  document.getElementById('fixo-chip-eu').classList.toggle('on',xPag==='eu');
+  document.getElementById('fixo-chip-pai').classList.toggle('on',xPag==='cassiano');
+  document.getElementById('fixo-chips-cat').innerHTML=st.cats.map(c=>`<button class="chip ${c.id===xCat?'on':''}" onclick="setXCat('${c.id}',this)">${c.icon} ${c.label}</button>`).join('');
   document.getElementById('ov-fixo').classList.add('open');
 }
 function setFixoFP(v,btn){xFP=v;document.getElementById('fixo-chip-deb').classList.toggle('on',v==='debito');document.getElementById('fixo-chip-cred').classList.toggle('on',v==='credito');}
@@ -1167,15 +1173,14 @@ function setXCat(id,btn){xCat=id;btn.closest('.chips').querySelectorAll('.chip')
 function salvarFixo(){
   const desc=document.getElementById('fixo-desc').value.trim();
   if(!desc){toast('Informe a descrição');return;}
-  st.fixos.push({id:'x'+Date.now(),desc,valor:parseFloat(document.getElementById('fixo-val').value)||0,dia:parseInt(document.getElementById('fixo-dia').value)||0,cat:xCat,pag:xPag,fp:xFP});
-  save();fecharSheet('ov-fixo');renderAll();toast('Gasto fixo adicionado ✓');
-}
-function delFixo(id,e){
-  e.stopPropagation();if(!confirm('Remover?'))return;
-  st.fixos=st.fixos.filter(f=>f.id!==id);save();renderAll();toast('Removido');
+  const editId=document.getElementById('fixo-edit-id').value;
+  const novoF={id:editId||('x'+Date.now()),desc,valor:parseFloat(document.getElementById('fixo-val').value)||0,dia:parseInt(document.getElementById('fixo-dia').value)||0,cat:xCat,pag:xPag,fp:xFP};
+  if(editId){st.fixos=st.fixos.map(f=>f.id===editId?novoF:f);}
+  else{st.fixos.push(novoF);}
+  save();fecharSheet('ov-fixo');renderAll();toast(editId?'Fixo atualizado ✓':'Fixo adicionado ✓');
 }
 
-// ═══════════════════════════════ RECEITAS ═══════════════════════════
+// ═══ RECEITAS ═══
 function addReceita(){
   const desc=prompt('Descrição:');if(!desc)return;
   const val=parseFloat(prompt('Valor (R$):'));if(!val||val<=0){toast('Valor inválido');return;}
@@ -1183,14 +1188,71 @@ function addReceita(){
   st.receitas.push({id:'r'+Date.now(),desc:desc.trim(),valor:val,dia});
   save();renderAll();toast('Receita adicionada ✓');
 }
-function delRec(id,e){
+
+// ═══ INVEST ═══
+function abrirAporte(ativoId){
+  ativoAtualId=ativoId;
+  const a=st.ativos.find(x=>x.id===ativoId);
+  document.getElementById('aporte-title').textContent='Aporte — '+(a?a.nome:'');
+  document.getElementById('aporte-val').value='';
+  document.getElementById('aporte-obs').value='';
+  document.getElementById('aporte-data').value=todayStr();
+  document.getElementById('ov-aporte').classList.add('open');
+  setTimeout(()=>document.getElementById('aporte-val').focus(),300);
+}
+function salvarAporte(){
+  const val=parseFloat(document.getElementById('aporte-val').value);
+  if(!val||val<=0){toast('Informe um valor');return;}
+  const a=st.ativos.find(x=>x.id===ativoAtualId);if(!a)return;
+  if(!a.aportes) a.aportes=[];
+  a.aportes.push({id:'ap'+Date.now(),valor:val,data:document.getElementById('aporte-data').value,obs:document.getElementById('aporte-obs').value.trim()});
+  save();fecharSheet('ov-aporte');renderInv();toast('Aporte registrado ✓');
+}
+function atualizarValor(id){
+  const a=st.ativos.find(x=>x.id===id);if(!a)return;
+  const v=parseFloat(prompt('Valor atual de '+a.nome+' (R$):',a.valorAtual||0));
+  if(isNaN(v))return;
+  a.valorAtual=v;save();renderInv();toast('Valor atualizado ✓');
+}
+function handleDelAporte(btn,e){
   e.stopPropagation();
-  if(st.receitas.length<=1){toast('Mantenha ao menos uma receita');return;}
-  if(!confirm('Remover?'))return;
-  st.receitas=st.receitas.filter(r=>r.id!==id);save();renderAll();toast('Removido');
+  confirmDel('_aporte_',btn.getAttribute('data-aid')+'|'+btn.getAttribute('data-apid'));
+}
+// Override confirmDel for aportes
+const _origConfirm=confirmDel;
+window.confirmDel=function(tipo,id){
+  if(tipo==='_aporte_'){
+    const [aid,apid]=id.split('|');
+    document.getElementById('confirm-title').textContent='Remover aporte';
+    document.getElementById('confirm-msg').textContent='Remover este aporte do histórico?';
+    document.getElementById('confirm-ok').onclick=function(){
+      fecharSheet('ov-confirm');
+      const a=st.ativos.find(x=>x.id===aid);if(!a)return;
+      a.aportes=a.aportes.filter(ap=>ap.id!==apid);
+      save();renderInv();toast('Removido');
+    };
+    document.getElementById('ov-confirm').classList.add('open');
+    return;
+  }
+  _origConfirm(tipo,id);
+};
+function abrirSheetAtivo(){
+  ativoTipoSel='Cripto';
+  document.getElementById('ativo-nome').value='';
+  document.getElementById('ativo-atual').value='';
+  document.getElementById('ativo-icon').value='';
+  document.getElementById('ativo-tipo-chips').innerHTML=TIPOS_INV.map(t=>`<button class="chip ${t==='Cripto'?'on':''}" onclick="setTipoAtivo('${t}',this)">${t}</button>`).join('');
+  document.getElementById('ov-ativo').classList.add('open');
+}
+function setTipoAtivo(t,btn){ativoTipoSel=t;btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');}
+function salvarAtivo(){
+  const nome=document.getElementById('ativo-nome').value.trim();if(!nome){toast('Informe o nome');return;}
+  const cores={Cripto:'#f59e0b','Renda Fixa':'#4ade80','Ações':'#60a5fa',FII:'#a78bfa',Tesouro:'#2dd4bf',Outro:'#94a3b8'};
+  st.ativos.push({id:'a'+Date.now(),nome,tipo:ativoTipoSel,icon:document.getElementById('ativo-icon').value.trim()||'★',cor:cores[ativoTipoSel]||'#94a3b8',valorAtual:parseFloat(document.getElementById('ativo-atual').value)||0,aportes:[]});
+  save();fecharSheet('ov-ativo');renderInv();toast('Ativo criado ✓');
 }
 
-// ═══════════════════════════════ CATEGORIAS ═══════════════════════
+// ═══ CATEGORIAS ═══
 function addCat(){
   const label=prompt('Nome:');if(!label)return;
   const icon=prompt('Ícone (emoji):','✦');
@@ -1206,7 +1268,45 @@ function editCat(id){
   save();renderAll();toast('Atualizado ✓');
 }
 
-// ═══════════════════════════════ EXPORT / IMPORT ═══════════════════
+// ═══ CONCILIAÇÃO ═══
+function abrirConc(){
+  const key=mesKey(mesAtual,anoAtual);
+  const existing=st.conciliacoes.find(c=>c.key===key);
+  document.getElementById('conc-title').textContent='Conciliar — '+MESES_F[mesAtual];
+  document.getElementById('conc-saldo-real').value=existing?existing.saldoReal:'';
+  document.getElementById('conc-obs').value=existing?existing.obs:'';
+  let fatHtml='';
+  st.cartoes.forEach(c=>{
+    const prev=getLancsFatura(key,c.id);
+    const stored=existing&&existing.faturas?existing.faturas[c.id]||'':'';
+    fatHtml+=`<div class="fg"><span class="fl">Fatura ${c.nome} (previsto: ${fmt(prev)})</span><input class="fi" type="number" id="fat-${c.id}" value="${stored}" placeholder="${prev||0}" inputmode="decimal" step="0.01"></div>`;
+  });
+  document.getElementById('conc-faturas-form').innerHTML=fatHtml;
+  document.getElementById('ov-conc').classList.add('open');
+}
+function salvarConc(){
+  const key=mesKey(mesAtual,anoAtual);
+  const real=parseFloat(document.getElementById('conc-saldo-real').value);
+  if(isNaN(real)){toast('Informe o saldo real');return;}
+  const {teorico}=calcSaldoTeorico(mesAtual,anoAtual);
+  const faturas={};
+  st.cartoes.forEach(c=>{const v=parseFloat(document.getElementById('fat-'+c.id)?.value);if(!isNaN(v))faturas[c.id]=v;});
+  const entry={key,saldoReal:real,teorico,obs:document.getElementById('conc-obs').value,faturas};
+  const idx=st.conciliacoes.findIndex(c=>c.key===key);
+  if(idx>=0) st.conciliacoes[idx]=entry; else st.conciliacoes.push(entry);
+  save();fecharSheet('ov-conc');renderConc();toast('Conciliação salva ✓');
+}
+
+// ═══ CARTÕES ═══
+function addCartao(){
+  const nome=prompt('Nome (ex: Visa 1234):');if(!nome)return;
+  const venc=parseInt(prompt('Dia de vencimento:'));if(!venc||venc<1||venc>31){toast('Dia inválido');return;}
+  const tipo=prompt('Tipo (mc ou visa):')==='visa'?'visa':'mc';
+  st.cartoes.push({id:'ct'+Date.now(),nome:nome.trim(),venc,tipo});
+  save();renderAll();toast('Cartão adicionado ✓');
+}
+
+// ═══ EXPORT / IMPORT ═══
 function exportJSON(){
   const blob=new Blob([JSON.stringify(st,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -1231,11 +1331,11 @@ function exportCSV(){
   st.fixos.forEach(f=>{
     const cat=getCat(f.cat);
     const dt=anoAtual+'-'+String(mesAtual+1).padStart(2,'0')+'-'+String(f.dia||1).padStart(2,'0');
-    csv+=`${dt},"${cat.label}","${f.desc} (fixo)","${f.pag}","${f.fp}",,,"${f.valor||0}"\n`;
+    csv+='"'+dt+'","'+cat.label+'","'+f.desc+' (fixo)","'+f.pag+'","'+f.fp+'",,"","'+f.valor+'"\n';
   });
   lancs.forEach(l=>{
     const cat=getCat(l.cat);const ct=l.cartaoId?getCartao(l.cartaoId):null;
-    csv+=`"${l.data}","${cat.label}","${l.desc||''}","${l.pag}","${l.fp}","${ct?ct.nome:''}","${l.fatura||''}","${l.valor}"\n`;
+    csv+='"'+l.data+'","'+cat.label+'","'+(l.desc||'')+'","'+l.pag+'","'+l.fp+'","'+(ct?ct.nome:'')+'","'+(l.fatura||'')+'","'+l.valor+'"\n';
   });
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -1243,66 +1343,46 @@ function exportCSV(){
   toast('Planilha exportada ✓');
 }
 
-// ═══════════════════════════════ TOAST ═══════════════════════════════
+// ═══ TOAST ═══
 let tt=null;
 function toast(msg){
   const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
   clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2400);
 }
 
-// ═══════════════════════════════ RENDER ALL ═══════════════════════
-function renderAll(){
-  document.getElementById('mes-label').textContent=MESES[mesAtual]+' '+anoAtual;
-  document.getElementById('topbar-title').textContent=MESES_F[mesAtual]+' '+anoAtual;
-  renderDash();renderFixos();renderVenc();renderDFC();renderConc();renderInv();renderConfig();
-}
+// ═══ EXPOSE GLOBALS ═══
+window.irPara=irPara;window.mudarMes=mudarMes;window.setVisao=setVisao;window.setDFC=setDFC;
+window.abrirSheet=abrirSheet;window.fecharSheet=fecharSheet;window.setFP=setFP;window.setFCartao=setFCartao;
+window.setPag=setPag;window.setFCat=setFCat;window.setDataBtn=setDataBtn;window.salvarLanc=salvarLanc;
+window.abrirSheetFixo=abrirSheetFixo;window.setFixoFP=setFixoFP;window.setFixoPag=setFixoPag;
+window.setXCat=setXCat;window.salvarFixo=salvarFixo;window.addReceita=addReceita;
+window.abrirAporte=abrirAporte;window.salvarAporte=salvarAporte;window.atualizarValor=atualizarValor;
+window.handleDelAporte=handleDelAporte;window.abrirSheetAtivo=abrirSheetAtivo;
+window.setTipoAtivo=setTipoAtivo;window.salvarAtivo=salvarAtivo;
+window.addCat=addCat;window.editCat=editCat;window.addCartao=addCartao;
+window.abrirConc=abrirConc;window.salvarConc=salvarConc;
+window.exportJSON=exportJSON;window.importJSON=importJSON;window.exportCSV=exportCSV;
+window.toast=toast;
 
-
-// Expose functions to global scope (required for ES module)
-window.abrirAporte = abrirAporte;
-window.abrirConc = abrirConc;
-window.abrirSheet = abrirSheet;
-window.abrirSheetAtivo = abrirSheetAtivo;
-window.abrirSheetFixo = abrirSheetFixo;
-window.addCartao = addCartao;
-window.addCat = addCat;
-window.addReceita = addReceita;
-window.atualizarValor = atualizarValor;
-window.delAporte = delAporte;
-window.delAtivo = delAtivo;
-window.delCartao = delCartao;
-window.delFixo = delFixo;
-window.delLanc = delLanc;
-window.delRec = delRec;
-window.editCat = editCat;
-window.exportCSV = exportCSV;
-window.exportJSON = exportJSON;
-window.fecharSheet = fecharSheet;
-window.handleDelAporte = handleDelAporte;
-window.irPara = irPara;
-window.mudarMes = mudarMes;
-window.salvarAporte = salvarAporte;
-window.salvarAtivo = salvarAtivo;
-window.salvarConc = salvarConc;
-window.salvarFixo = salvarFixo;
-window.salvarLanc = salvarLanc;
-window.setDFC = setDFC;
-window.setFCartao = setFCartao;
-window.setFCat = setFCat;
-window.setFP = setFP;
-window.setFixoFP = setFixoFP;
-window.setFixoPag = setFixoPag;
-window.setPag = setPag;
-window.setTipoAtivo = setTipoAtivo;
-window.setVisao = setVisao;
-window.setXCat = setXCat;
-window.importJSON = importJSON;
-window.toast = toast;
-
-async function init() {
-  await syncFromFirebase();
+// ═══ INIT ═══
+async function init(){
+  try{
+    setSyncStatus('syncing');
+    const snap=await getDoc(DOC_REF);
+    if(snap.exists()){
+      const remote=JSON.parse(snap.data().data);
+      st=remote;localStorage.setItem(KEY,JSON.stringify(st));
+    }
+    setSyncStatus('ok');
+  }catch(e){setSyncStatus('error');console.error(e);}
   renderAll();
-  startRealtimeSync();
+  onSnapshot(DOC_REF,(snap)=>{
+    if(snap.exists()){
+      const remote=JSON.parse(snap.data().data);
+      st=remote;localStorage.setItem(KEY,JSON.stringify(st));
+      renderAll();
+    }
+  });
 }
 init();
 </script>
