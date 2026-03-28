@@ -582,7 +582,8 @@ function renderDash(){
     const dia=l.data?parseInt(l.data.split('-')[2]):'?';
     const fpB=l.fp==='credito'?'<span class="badge b-cred">crédito</span>':'<span class="badge b-deb">débito</span>';
     const pagB=l.pag==='eu'?'<span class="badge b-eu">eu</span>':'<span class="badge b-pai">Cassiano</span>';
-    const cartB=l.cartaoId&&l.fp==='credito'?()=>{const ct=getCartao(l.cartaoId);return ct?`<span class="card-chip ${ct.tipo==='visa'?'cc-visa':'cc-mc'}">${ct.nome}</span>`:''}():''
+    const cartObj=l.cartaoId&&l.fp==='credito'?getCartao(l.cartaoId):null;
+    const cartB=cartObj?'<span class="card-chip '+(cartObj.tipo==="visa"?'cc-visa':'cc-mc')+'">'+cartObj.nome+'</span>':''
     return `<div class="item">
       <div class="item-icon" style="background:${cat.cor}20">${cat.icon}</div>
       <div class="item-body">
@@ -750,9 +751,9 @@ function renderConc(){
       <span style="font-weight:500">Saldo teórico</span>
       <span class="conc-val" style="color:${teorico>=0?'var(--green)':'var(--red)'};font-size:16px">${fmt(teorico)}</span>
     </div>
-    ${real!==null?`<div class="conc-row"><span class="conc-key">Saldo real (extrato)</span><span class="conc-val">${fmt(real)}</span></div>`:''}
-    ${div!==null?`<div class="conc-row"><span class="conc-key">Divergência</span><span class="conc-val" style="color:${Math.abs(div)===0?'var(--green)':Math.abs(div)<=50?'var(--amber)':'var(--red)'}">${fmt(div)}</span></div>`:''}
-    ${concAtual&&concAtual.obs?`<div style="font-size:12px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">Obs: ${concAtual.obs}</div>`:''}
+    ${real!==null?('<div class="conc-row"><span class="conc-key">Saldo real (extrato)</span><span class="conc-val">'+fmt(real)+'</span></div>'):''}
+    ${buildDivRow(div)}
+    ${concAtual&&concAtual.obs?('<div style="font-size:12px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">Obs: '+concAtual.obs+'</div>'):''}
     <button class="btn-ghost" style="margin-top:14px" onclick="abrirConc()">
       ${concAtual?'Editar conciliação':'Conciliar mês'}
     </button>`;
@@ -765,7 +766,7 @@ function renderConc(){
     const stCls=Math.abs(dv)===0?'cs-ok':Math.abs(dv)<=50?'cs-warn':'cs-bad';
     return `<div class="item">
       <div class="item-body"><div class="item-name">${MESES[parseInt(m)-1]} ${a}</div><div class="item-sub">Teórico ${fmt(c.teorico)} · Real ${fmt(c.saldoReal)}</div></div>
-      <span class="conc-status ${stCls}" style="font-size:11px">${Math.abs(dv)===0?'✓ OK':`Dif. ${fmt(Math.abs(dv))}`}</span>
+      <span class="conc-status ${stCls}" style="font-size:11px">${Math.abs(dv)===0?'✓ OK':'Dif. '+fmt(Math.abs(dv))}</span>
     </div>`;
   }).join(''):'<div class="empty"><div class="empty-text">Nenhuma conciliação anterior</div></div>';
 }
@@ -835,6 +836,11 @@ function renderAportes(a){
     +rows+'</div>';
 }
 
+function buildDivRow(div){
+  if(div===null) return '';
+  var col=Math.abs(div)===0?'var(--green)':Math.abs(div)<=50?'var(--amber)':'var(--red)';
+  return '<div class="conc-row"><span class="conc-key">Divergência</span><span class="conc-val" style="color:'+col+'">'+fmt(div)+'</span></div>';
+}
 function buildAportesHtml(a){
   if(!a.aportes||!a.aportes.length) return '';
   var rows=[...(a.aportes)].sort(function(x,y){return y.data>x.data?1:-1;}).slice(0,5).map(function(ap){
@@ -883,7 +889,7 @@ function renderInv(){
         <div><div class="inv-mini-label">Atual</div><div class="inv-mini-val" style="color:var(--green)">${fmt(a.valorAtual||0)}</div></div>
         <div><div class="inv-mini-label">Aportes</div><div class="inv-mini-val">${(a.aportes||[]).length}x</div></div>
       </div>
-      ${lastAp?`<div style="font-size:11px;color:var(--text3);margin-top:10px">Último aporte: ${fmt(lastAp.valor)} em ${lastAp.data||'—'}</div>`:''}
+      ${lastAp?('<div style="font-size:11px;color:var(--text3);margin-top:10px">Último aporte: '+fmt(lastAp.valor)+' em '+(lastAp.data||'—')+'</div>'):''}
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn-ghost" style="margin-top:0;flex:1;padding:10px;font-size:13px" onclick="abrirAporte('${a.id}')">+ Aporte</button>
         <button class="btn-ghost" style="margin-top:0;flex:1;padding:10px;font-size:13px" onclick="atualizarValor('${a.id}')">Atualizar valor</button>
