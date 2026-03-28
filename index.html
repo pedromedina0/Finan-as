@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0a0f">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <title>Finanças</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -722,6 +723,12 @@ function setSyncStatus(s){
 }
 
 // ═══ PIN ═══
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('pin-screen').style.display==='none') return;
+  if(e.key>='0'&&e.key<='9') pinPress(e.key);
+  else if(e.key==='Backspace') pinDel();
+});
+
 function pinPress(d){
   if(pinEntrada.length>=4) return;
   pinEntrada+=d;
@@ -790,7 +797,8 @@ function renderDash(){
   const diasNoMes=new Date(anoAtual,mesAtual+1,0).getDate();
   const diaHoje=mesAtual===hoje.getMonth()&&anoAtual===hoje.getFullYear()?hoje.getDate():diasNoMes;
   const gastoAteHoje=totalFix+totalVar;
-  const projecao=diasNoMes>0?Math.round(gastoAteHoje/diaHoje*diasNoMes):gastoAteHoje;
+  const isFutureMes=mesAtual>hoje.getMonth()&&anoAtual>=hoje.getFullYear()||anoAtual>hoje.getFullYear();
+  const projecao=isFutureMes?gastoAteHoje:(diasNoMes>0?Math.round(gastoAteHoje/diaHoje*diasNoMes):gastoAteHoje);
   const pct=Math.min(Math.round(gastoAteHoje/totalRec*100),100);
   const barColor=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
   document.getElementById('proj-card').innerHTML=`
@@ -1598,8 +1606,9 @@ async function init(){
   onSnapshot(DOC_REF,(snap)=>{
     if(snap.exists()){
       const remote=JSON.parse(snap.data().data);
+      const anyOpen=document.querySelector('.overlay.open');
       st=remote;localStorage.setItem(KEY,JSON.stringify(st));
-      renderAll();
+      if(!anyOpen) renderAll();
     }
   });
 }
