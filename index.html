@@ -748,7 +748,6 @@ function pinDel(){
   pinEntrada=pinEntrada.slice(0,-1);
   for(let i=0;i<4;i++) document.getElementById('pd'+i).className='pin-dot'+(i<pinEntrada.length?' filled':'');
 }
-window.pinPress=pinPress; window.pinDel=pinDel;
 
 // ═══ HIDE VALUES ═══
 function toggleHide(){
@@ -1119,7 +1118,7 @@ function renderOrc(){
       +'<div style="display:flex;align-items:center;gap:8px">'
       +'<span class="orc-pct" style="color:'+barColor+'">'+pct+'%</span>'
       +'<input class="orc-edit-inp" type="number" value="'+limite+'" placeholder="Teto" '
-      +'onchange="salvarOrcamento(''+c.id+'',this.value)" inputmode="numeric">'
+      +'onchange="salvarOrcamento(\"'+c.id+'\",this.value)" inputmode="numeric">'
       +'</div></div>'
       +'<div class="orc-bar-track"><div class="orc-bar-fill" style="width:'+Math.min(pct,100)+'%;background:'+barColor+'"></div></div>'
       +'<div class="orc-footer">'
@@ -1569,7 +1568,8 @@ function toast(msg){
 }
 
 // ═══ EXPOSE GLOBALS ═══
-window.salvarOrcamento=salvarOrcamento;window.resetOrcamentos=resetOrcamentos;
+window.pinPress=pinPress;window.pinDel=pinDel;window.salvarOrcamento=salvarOrcamento;window.resetOrcamentos=resetOrcamentos;
+window.toggleHide=toggleHide;window.exportPDF=exportPDF;window.confirmDel=confirmDel;
 window.irPara=irPara;window.mudarMes=mudarMes;window.setVisao=setVisao;window.setDFC=setDFC;
 window.abrirSheet=abrirSheet;window.fecharSheet=fecharSheet;window.setFP=setFP;window.setFCartao=setFCartao;
 window.setPag=setPag;window.setFCat=setFCat;window.setDataBtn=setDataBtn;window.salvarLanc=salvarLanc;
