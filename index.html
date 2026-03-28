@@ -150,7 +150,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .sec:first-child{margin-top:4px}
 
 /* FAB */
-.fab{position:fixed;bottom:calc(var(--nav-h)+16px);right:calc(50% - 240px + 16px);width:52px;height:52px;border-radius:50%;background:var(--gold);color:#0a0a0f;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 24px rgba(201,169,110,0.35);transition:transform .2s;font-weight:300}
+.fab{position:fixed;bottom:calc(var(--nav-h)+16px);right:calc(50% - 240px + 16px);width:52px;height:52px;border-radius:50%;background:var(--gold);color:#0a0a0f;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:101;box-shadow:0 4px 24px rgba(201,169,110,0.35);transition:transform .2s;font-weight:300}
 .fab:active{transform:scale(.92)}
 @media(max-width:480px){.fab{right:16px}}
 
@@ -873,18 +873,17 @@ function renderDFC(){
       const saidas=totalFB+varG;
       const saldo=rec-saidas-inv;
       const isNow=m===mesAtual&&a===anoAtual;
-      rows+=`<tr class="${isNow?'now-row':''}">
-        <td>${MESES[m]}/${String(a).slice(2)}</td>
-        <td style="color:var(--green)">${fmt(rec)}</td>
-        <td style="color:var(--red)">${fmt(saidas)}</td>
-        <td style="color:var(--gold)">${fmt(inv)}</td>
-        <td style="color:${saldo>=0?'var(--green)':'var(--red)'}">${fmt(saldo)}</td>
-      </tr>`;
+      rows+='<tr class="'+(isNow?'now-row':'')+'"><td>'+MESES[m]+'/'+String(a).slice(2)+'</td>'
+        +'<td style="color:var(--green)" class="hv">'+fmt(rec)+'</td>'
+        +'<td style="color:var(--red)" class="hv">'+fmt(saidas)+'</td>'
+        +'<td style="color:var(--gold)" class="hv">'+fmt(inv)+'</td>'
+        +'<td style="color:'+(saldo>=0?'var(--green)':'var(--red)')+'" class="hv">'+fmt(saldo)+'</td></tr>';
     }
     return '<thead><tr><th>Mês</th><th>Entrada</th><th>Saídas</th><th>Invest.</th><th>Saldo</th></tr></thead><tbody>'+rows+'</tbody>';
   }
   document.getElementById('dfc-eu').innerHTML=build(false);
   document.getElementById('dfc-real').innerHTML=build(true);
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
 }
 
 // ═══ RENDER CONC ═══
