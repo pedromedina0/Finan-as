@@ -150,7 +150,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .sec:first-child{margin-top:4px}
 
 /* FAB */
-.fab{position:fixed;bottom:calc(var(--nav-h)+16px);right:16px;width:52px;height:52px;border-radius:50%;background:var(--gold);color:#0a0a0f;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:101;box-shadow:0 4px 24px rgba(201,169,110,0.35);transition:transform .2s;font-weight:300}
+.fab{position:fixed;bottom:calc(var(--nav-h)+20px);right:20px;width:56px;height:56px;border-radius:50%;background:var(--gold);color:#0a0a0f;border:none;font-size:28px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:500;box-shadow:0 0 0 4px rgba(201,169,110,0.25),0 4px 20px rgba(201,169,110,0.4);transition:transform .15s}
 .fab:active{transform:scale(.92)}
 
 /* OVERLAY / SHEET */
@@ -396,9 +396,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     </div>
     <input type="file" id="imp-in" accept=".json" style="display:none" onchange="importJSON(event)">
   </div>
+  <button class="fab" onclick="abrirSheet(null)">+</button>
 </div>
-
-<button class="fab" onclick="abrirSheet(null)">+</button>
 
 <!-- MODAL LANÇAMENTO -->
 <div class="overlay" id="ov-lanc">
@@ -685,7 +684,7 @@ function pinPress(d){
   for(let i=0;i<4;i++) document.getElementById('pd'+i).className='pin-dot'+(i<pinEntrada.length?' filled':'');
   if(pinEntrada.length===4){
     if(pinEntrada===PIN){
-      document.getElementById('pin-screen').style.display='none';
+      document.getElementById('pin-screen').style.display='none';document.getElementById('pin-screen').style.pointerEvents='none';
     } else {
       const dots=document.getElementById('pin-dots');
       dots.classList.add('shake');
