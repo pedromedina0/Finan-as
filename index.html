@@ -820,6 +820,36 @@ function addCartao(){
 }
 
 // ═══════════════════════════════ RENDER INVESTIMENTOS ═══════════════
+function renderAportes(a){
+  if(!a.aportes||!a.aportes.length) return '';
+  const rows=[...(a.aportes||[])].sort((x,y)=>y.data>x.data?1:-1).slice(0,5).map(function(ap){
+    return '<div class="aporte-item">'
+      +'<div style="flex:1"><div style="font-size:13px">'+(ap.obs||'Aporte')+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+(ap.data||'—')+'</div></div>'
+      +'<div style="font-size:14px;font-weight:500;color:var(--gold)">'+fmt(ap.valor)+'</div>'
+      +'<button class="del-btn" onclick="delAporte(\'' +a.id+ '\',\'' +ap.id+ '\',event)">×</button>'
+      +'</div>';
+  }).join('');
+  return '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
+    +'<div class="card-title" style="margin-bottom:8px">Histórico de aportes</div>'
+    +rows+'</div>';
+}
+
+function buildAportesHtml(a){
+  if(!a.aportes||!a.aportes.length) return '';
+  var rows=[...(a.aportes)].sort(function(x,y){return y.data>x.data?1:-1;}).slice(0,5).map(function(ap){
+    return '<div class="aporte-item">'
+      +'<div style="flex:1"><div style="font-size:13px">'+(ap.obs||'Aporte')+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+(ap.data||'—')+'</div></div>'
+      +'<div style="font-size:14px;font-weight:500;color:var(--gold)">'+fmt(ap.valor)+'</div>'
+      +'<button class="del-btn" onclick="delAporte(''+a.id+'',''+ap.id+'',event)">×</button>'
+      +'</div>';
+  }).join('');
+  return '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
+    +'<div class="card-title" style="margin-bottom:8px">Histórico de aportes</div>'
+    +rows+'</div>';
+}
+
 function renderInv(){
   const totalAtual=st.ativos.reduce((s,a)=>s+(a.valorAtual||0),0);
   const totalAport=st.ativos.reduce((s,a)=>s+(a.aportes||[]).reduce((x,ap)=>x+(ap.valor||0),0),0);
@@ -859,16 +889,7 @@ function renderInv(){
         <button class="btn-ghost" style="margin-top:0;flex:1;padding:10px;font-size:13px" onclick="atualizarValor('${a.id}')">Atualizar valor</button>
         <button class="del-btn" style="padding:8px" onclick="delAtivo('${a.id}',event)">×</button>
       </div>
-      ${(a.aportes&&a.aportes.length>0)?`
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-        <div class="card-title" style="margin-bottom:8px">Histórico de aportes</div>
-        ${[...(a.aportes||[])].sort((x,y)=>y.data>x.data?1:-1).slice(0,5).map(ap=>`
-          <div class="aporte-item">
-            <div style="flex:1"><div style="font-size:13px">${ap.obs||'Aporte'}</div><div style="font-size:11px;color:var(--text3)">${ap.data||'—'}</div></div>
-            <div style="font-size:14px;font-weight:500;color:var(--gold)">${fmt(ap.valor)}</div>
-            <button class="del-btn" onclick="delAporte('${a.id}','${ap.id}',event)">×</button>
-          </div>`).join('')}
-      </div>`:''}
+      ${buildAportesHtml(a)}
     </div>`;
   }).join('')||'<div class="empty"><div class="empty-icon">📈</div><div class="empty-text">Nenhum ativo cadastrado</div></div>';
 }
