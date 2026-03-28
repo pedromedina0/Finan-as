@@ -243,6 +243,28 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .add-cat{display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:11px;cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px}
 .add-cat:hover{color:var(--gold);border-color:var(--gold)}
 
+/* ORÇAMENTO */
+.orc-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:8px}
+.orc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.orc-cat-name{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500}
+.orc-pct{font-size:12px;font-weight:500}
+.orc-bar-track{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.orc-bar-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.orc-footer{display:flex;justify-content:space-between;font-size:12px;color:var(--text3)}
+.orc-edit-inp{width:90px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:5px 8px;font-size:13px;color:var(--text);font-family:var(--font-body);text-align:right}
+.orc-resumo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px}
+.orc-resumo-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.orc-resumo-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.orc-resumo-val{font-size:16px;font-weight:500}
+
+/* CHART */
+.chart-wrap{width:100%;overflow-x:auto;margin-top:10px}
+.chart-svg{display:block}
+
+/* PDF btn */
+.pdf-btn{display:flex;align-items:center;gap:8px;width:100%;padding:13px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:14px;font-family:var(--font-body);color:var(--text);transition:border-color .15s;margin-bottom:8px}
+.pdf-btn:hover{border-color:var(--border2)}
+
 /* UTIL */
 .del-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px 6px;font-size:18px;transition:color .15s;line-height:1;flex-shrink:0}
 .del-btn:hover{color:var(--red)}
@@ -380,7 +402,17 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
       </div>
     </div>
     <div id="inv-ativos"></div>
-    <button class="btn-ghost" style="margin-top:4px" onclick="abrirSheetAtivo()">+ Novo ativo</button>
+    <div id="inv-chart" style="margin-top:10px"></div>
+    <button class="btn-ghost" style="margin-top:10px" onclick="abrirSheetAtivo()">+ Novo ativo</button>
+  </div>
+
+  <!-- ORÇAMENTO -->
+  <div class="screen" id="screen-orc">
+    <div id="orc-mes-label" style="font-size:11px;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:12px"></div>
+    <div id="orc-resumo"></div>
+    <div class="sec" style="margin-top:16px">Por categoria</div>
+    <div id="orc-cats"></div>
+    <button class="btn-ghost" style="margin-top:12px" onclick="resetOrcamentos()">Restaurar sugestões padrão</button>
   </div>
 
   <!-- CONFIG -->
@@ -396,6 +428,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
       <div class="config-row" onclick="exportJSON()"><div><div style="font-size:14px">Exportar backup (JSON)</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Salvar todos os dados</div></div><span style="color:var(--text3)">↓</span></div>
       <div class="config-row" onclick="document.getElementById('imp-in').click()"><div><div style="font-size:14px">Importar backup</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Restaurar de arquivo JSON</div></div><span style="color:var(--text3)">↑</span></div>
       <div class="config-row" onclick="exportCSV()"><div><div style="font-size:14px">Exportar planilha (CSV)</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Lançamentos do mês</div></div><span style="color:var(--text3)">↓</span></div>
+      <div class="config-row" onclick="exportPDF()"><div><div style="font-size:14px">Exportar relatório (PDF)</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Resumo visual do mês</div></div><span style="color:var(--text3)">↓</span></div>
     </div>
     <input type="file" id="imp-in" accept=".json" style="display:none" onchange="importJSON(event)">
   </div>
@@ -542,6 +575,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   <button class="nav-btn" onclick="irPara('inv',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-3 3"/></svg>Invest.
   </button>
+  <button class="nav-btn" onclick="irPara('orc',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M2 7h20M2 17h20"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Orçam.
+  </button>
   <button class="nav-btn" onclick="irPara('config',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Config
   </button>
@@ -614,10 +650,15 @@ const ATIVOS_DEF = [
 const LANCS_HIST = [{"id":"l_m001","data":"2026-03-27","valor":30.0,"cat":"outros","fp":"debito","pag":"eu","desc":"PIX Felipe","fatura":null,"cartaoId":null},{"id":"l_m002","data":"2026-03-26","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_m003","data":"2026-03-25","valor":8.0,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Nova (lanchonete)","fatura":null,"cartaoId":null},{"id":"l_m004","data":"2026-03-24","valor":54.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Panacota","fatura":null,"cartaoId":null},{"id":"l_m005","data":"2026-03-23","valor":19.99,"cat":"saude","fp":"debito","pag":"eu","desc":"Drogaria","fatura":null,"cartaoId":null},{"id":"l_m006","data":"2026-03-23","valor":104.34,"cat":"moradia","fp":"debito","pag":"eu","desc":"Vivo Internet (variável)","fatura":null,"cartaoId":null},{"id":"l_m007","data":"2026-03-23","valor":11.0,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Nova","fatura":null,"cartaoId":null},{"id":"l_m008","data":"2026-03-23","valor":27.29,"cat":"moradia","fp":"debito","pag":"eu","desc":"Companhia de Gás","fatura":null,"cartaoId":null},{"id":"l_m009","data":"2026-03-23","valor":146.0,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_m010","data":"2026-03-23","valor":2.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seg Transação Protegida","fatura":null,"cartaoId":null},{"id":"l_m011","data":"2026-03-19","valor":45.9,"cat":"lazer","fp":"debito","pag":"eu","desc":"Parque","fatura":null,"cartaoId":null},{"id":"l_m012","data":"2026-03-19","valor":8.9,"cat":"lazer","fp":"debito","pag":"eu","desc":"Parque","fatura":null,"cartaoId":null},{"id":"l_m013","data":"2026-03-17","valor":35.99,"cat":"saude","fp":"debito","pag":"eu","desc":"Top Fit","fatura":null,"cartaoId":null},{"id":"l_m014","data":"2026-03-17","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_m015","data":"2026-03-16","valor":135.64,"cat":"outros","fp":"debito","pag":"eu","desc":"Amazon","fatura":null,"cartaoId":null},{"id":"l_m016","data":"2026-03-16","valor":33.8,"cat":"lazer","fp":"debito","pag":"eu","desc":"Moonlight (streaming)","fatura":null,"cartaoId":null},{"id":"l_m017","data":"2026-03-16","valor":39.99,"cat":"lazer","fp":"debito","pag":"eu","desc":"Via Play (streaming)","fatura":null,"cartaoId":null},{"id":"l_m018","data":"2026-03-13","valor":32.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Grupo","fatura":null,"cartaoId":null},{"id":"l_m019","data":"2026-03-13","valor":4.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercê","fatura":null,"cartaoId":null},{"id":"l_m020","data":"2026-03-10","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_m021","data":"2026-03-09","valor":53.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"NcAla (restaurante)","fatura":null,"cartaoId":null},{"id":"l_m022","data":"2026-03-06","valor":293.8,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"MOMA (restaurante)","fatura":null,"cartaoId":null},{"id":"l_m023","data":"2026-03-06","valor":10.31,"cat":"outros","fp":"debito","pag":"eu","desc":"Seguro Cartão","fatura":null,"cartaoId":null},{"id":"l_m024","data":"2026-03-04","valor":85.61,"cat":"moradia","fp":"debito","pag":"eu","desc":"ENEL","fatura":null,"cartaoId":null},{"id":"l_m025","data":"2026-03-04","valor":86.17,"cat":"moradia","fp":"debito","pag":"eu","desc":"ENEL","fatura":null,"cartaoId":null},{"id":"l_m026","data":"2026-03-03","valor":35.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Manai (restaurante)","fatura":null,"cartaoId":null},{"id":"l_m027","data":"2026-03-03","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_m028","data":"2026-03-02","valor":150.29,"cat":"outros","fp":"debito","pag":"eu","desc":"Novo","fatura":null,"cartaoId":null},{"id":"l_m029","data":"2026-03-24","valor":130.0,"cat":"outros","fp":"debito","pag":"eu","desc":"PIX Cassiano","fatura":null,"cartaoId":null},{"id":"l_f001","data":"2026-02-26","valor":60.54,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Sabor (restaurante)","fatura":null,"cartaoId":null},{"id":"l_f002","data":"2026-02-25","valor":344.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Parcela celular","fatura":null,"cartaoId":null},{"id":"l_f003","data":"2026-02-24","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_f004","data":"2026-02-23","valor":99.99,"cat":"moradia","fp":"debito","pag":"eu","desc":"Vivo Internet","fatura":null,"cartaoId":null},{"id":"l_f005","data":"2026-02-23","valor":16.0,"cat":"lazer","fp":"debito","pag":"eu","desc":"Ponto (lazer)","fatura":null,"cartaoId":null},{"id":"l_f006","data":"2026-02-23","valor":7.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Banca","fatura":null,"cartaoId":null},{"id":"l_f007","data":"2026-02-23","valor":2.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seg Transação Protegida","fatura":null,"cartaoId":null},{"id":"l_f008","data":"2026-02-20","valor":54.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Panacota","fatura":null,"cartaoId":null},{"id":"l_f009","data":"2026-02-20","valor":14.98,"cat":"moradia","fp":"debito","pag":"eu","desc":"Companhia de Gás","fatura":null,"cartaoId":null},{"id":"l_f010","data":"2026-02-18","valor":115.47,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_f011","data":"2026-02-18","valor":89.86,"cat":"outros","fp":"debito","pag":"eu","desc":"Shopee","fatura":null,"cartaoId":null},{"id":"l_f012","data":"2026-02-12","valor":39.99,"cat":"lazer","fp":"debito","pag":"eu","desc":"Via Play (streaming)","fatura":null,"cartaoId":null},{"id":"l_f013","data":"2026-02-11","valor":80.63,"cat":"moradia","fp":"debito","pag":"eu","desc":"Vivo Internet","fatura":null,"cartaoId":null},{"id":"l_f014","data":"2026-02-10","valor":26.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"LPQ (padaria)","fatura":null,"cartaoId":null},{"id":"l_f015","data":"2026-02-10","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_f016","data":"2026-02-09","valor":264.8,"cat":"lazer","fp":"debito","pag":"eu","desc":"Europa (lazer)","fatura":null,"cartaoId":null},{"id":"l_f017","data":"2026-02-09","valor":83.6,"cat":"lazer","fp":"debito","pag":"eu","desc":"Europa (lazer)","fatura":null,"cartaoId":null},{"id":"l_f018","data":"2026-02-06","valor":181.36,"cat":"outros","fp":"debito","pag":"eu","desc":"Astor","fatura":null,"cartaoId":null},{"id":"l_f019","data":"2026-02-06","valor":9.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seguro Cartão","fatura":null,"cartaoId":null},{"id":"l_f020","data":"2026-02-05","valor":54.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Panacota","fatura":null,"cartaoId":null},{"id":"l_f021","data":"2026-02-05","valor":1200.0,"cat":"investimentos","fp":"debito","pag":"eu","desc":"Bitcoin (Latam Gateway)","fatura":null,"cartaoId":null},{"id":"l_f022","data":"2026-02-03","valor":1500.0,"cat":"investimentos","fp":"debito","pag":"eu","desc":"Bitcoin (Gowd)","fatura":null,"cartaoId":null},{"id":"l_f023","data":"2026-02-03","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_f024","data":"2026-02-02","valor":2500.0,"cat":"investimentos","fp":"debito","pag":"eu","desc":"Bitcoin (Gowd)","fatura":null,"cartaoId":null},{"id":"l_f025","data":"2026-02-02","valor":24.02,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_f026","data":"2026-02-02","valor":13.05,"cat":"moradia","fp":"debito","pag":"eu","desc":"Gás (Comgás)","fatura":null,"cartaoId":null},{"id":"l_j001","data":"2026-01-30","valor":44.85,"cat":"outros","fp":"debito","pag":"eu","desc":"Shopee","fatura":null,"cartaoId":null},{"id":"l_j002","data":"2026-01-29","valor":52.95,"cat":"outros","fp":"debito","pag":"eu","desc":"Amazon","fatura":null,"cartaoId":null},{"id":"l_j003","data":"2026-01-29","valor":146.3,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_j004","data":"2026-01-29","valor":8.44,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercê","fatura":null,"cartaoId":null},{"id":"l_j005","data":"2026-01-28","valor":215.0,"cat":"moradia","fp":"debito","pag":"cassiano","desc":"Diarista (repasse)","fatura":null,"cartaoId":null},{"id":"l_j006","data":"2026-01-27","valor":179.58,"cat":"transporte","fp":"debito","pag":"eu","desc":"Passagem ônibus (viagem)","fatura":null,"cartaoId":null},{"id":"l_j007","data":"2026-01-27","valor":96.27,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercado (Pix Marketplace)","fatura":null,"cartaoId":null},{"id":"l_j008","data":"2026-01-26","valor":344.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Parcela celular","fatura":null,"cartaoId":null},{"id":"l_j009","data":"2026-01-23","valor":91.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Leand","fatura":null,"cartaoId":null},{"id":"l_j010","data":"2026-01-23","valor":2.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seg Transação Protegida","fatura":null,"cartaoId":null},{"id":"l_j011","data":"2026-01-22","valor":39.99,"cat":"lazer","fp":"debito","pag":"eu","desc":"Via Play (streaming)","fatura":null,"cartaoId":null},{"id":"l_j012","data":"2026-01-21","valor":15.0,"cat":"lazer","fp":"debito","pag":"eu","desc":"Ponto (lazer)","fatura":null,"cartaoId":null},{"id":"l_j013","data":"2026-01-20","valor":40.78,"cat":"moradia","fp":"debito","pag":"eu","desc":"ENEL","fatura":null,"cartaoId":null},{"id":"l_j014","data":"2026-01-19","valor":3.45,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercê","fatura":null,"cartaoId":null},{"id":"l_j015","data":"2026-01-19","valor":24.88,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Keeta Delivery","fatura":null,"cartaoId":null},{"id":"l_j016","data":"2026-01-16","valor":54.9,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Panacota","fatura":null,"cartaoId":null},{"id":"l_j017","data":"2026-01-16","valor":9.93,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Mercê","fatura":null,"cartaoId":null},{"id":"l_j018","data":"2026-01-14","valor":114.13,"cat":"outros","fp":"debito","pag":"eu","desc":"Amazon","fatura":null,"cartaoId":null},{"id":"l_j019","data":"2026-01-14","valor":100.97,"cat":"outros","fp":"debito","pag":"eu","desc":"Shopee","fatura":null,"cartaoId":null},{"id":"l_j020","data":"2026-01-12","valor":30.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Luiz Carlos","fatura":null,"cartaoId":null},{"id":"l_j021","data":"2026-01-12","valor":38.1,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Pão de Açúcar","fatura":null,"cartaoId":null},{"id":"l_j022","data":"2026-01-12","valor":105.62,"cat":"outros","fp":"debito","pag":"eu","desc":"Shopee","fatura":null,"cartaoId":null},{"id":"l_j023","data":"2026-01-12","valor":33.99,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"Restaurante","fatura":null,"cartaoId":null},{"id":"l_j024","data":"2026-01-09","valor":30.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Adivania","fatura":null,"cartaoId":null},{"id":"l_j025","data":"2026-01-08","valor":25.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Luiz Carlos","fatura":null,"cartaoId":null},{"id":"l_j026","data":"2026-01-07","valor":25.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Luiz Carlos","fatura":null,"cartaoId":null},{"id":"l_j027","data":"2026-01-06","valor":74.29,"cat":"alimentacao","fp":"debito","pag":"eu","desc":"O Aristocrata (restaurante)","fatura":null,"cartaoId":null},{"id":"l_j028","data":"2026-01-06","valor":25.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Luiz Carlos","fatura":null,"cartaoId":null},{"id":"l_j029","data":"2026-01-06","valor":9.9,"cat":"outros","fp":"debito","pag":"eu","desc":"Seguro Cartão","fatura":null,"cartaoId":null},{"id":"l_j030","data":"2026-01-05","valor":290.0,"cat":"outros","fp":"debito","pag":"eu","desc":"PIX Pedro H","fatura":null,"cartaoId":null},{"id":"l_j031","data":"2026-01-05","valor":80.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Malha (roupa)","fatura":null,"cartaoId":null},{"id":"l_j032","data":"2026-01-05","valor":28.0,"cat":"outros","fp":"debito","pag":"eu","desc":"Valdenice","fatura":null,"cartaoId":null},{"id":"l_f027","data":"2026-02-05","valor":1719.89,"cat":"outros","fp":"debito","pag":"eu","desc":"Sispag Nunca Parar","fatura":null,"cartaoId":null}];
 const BTC_APORTES = [{"id":"ap_b001","valor":2500.0,"data":"2026-02-02","obs":"Aporte Bitcoin (Gowd)"},{"id":"ap_b002","valor":1500.0,"data":"2026-02-03","obs":"Aporte Bitcoin (Gowd)"},{"id":"ap_b003","valor":1200.0,"data":"2026-02-05","obs":"Aporte Bitcoin (Latam Gateway)"}];
 
+const ORC_SUGESTOES = {
+  moradia: 1200, alimentacao: 800, transporte: 300, lazer: 400,
+  investimentos: 500, saude: 200, educacao: 100, outros: 300
+};
+
 function defaultState() {
   const ativos = JSON.parse(JSON.stringify(ATIVOS_DEF));
   ativos[0].aportes = [...BTC_APORTES];
-  return {lancs:[...LANCS_HIST],fixos:[...FIXOS_DEF],receitas:[...REC_DEF],cats:[...CATS_DEF],cartoes:[...CARTOES_DEF],ativos,conciliacoes:[]};
+  return {lancs:[...LANCS_HIST],fixos:[...FIXOS_DEF],receitas:[...REC_DEF],cats:[...CATS_DEF],cartoes:[...CARTOES_DEF],ativos,conciliacoes:[],orcamentos:{...ORC_SUGESTOES}};
 }
 function load() {
   try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch(e){}
@@ -1014,6 +1055,9 @@ function renderInv(){
       ${buildAportesHtml(a)}
     </div>`;
   }).join('')||'<div class="empty"><div class="empty-icon">📈</div><div class="empty-text">Nenhum ativo cadastrado</div></div>';
+  // Patrimony chart
+  const chartEl=document.getElementById('inv-chart');
+  if(chartEl) chartEl.innerHTML=buildPatrimonyChart();
   if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
 }
 
@@ -1032,11 +1076,135 @@ function renderConfig(){
     </div>`).join('')||'<div class="empty"><div class="empty-text">Nenhum cartão</div></div>';
 }
 
+// ═══ RENDER ORÇAMENTO ═══
+function renderOrc(){
+  const vis='meu';
+  const {totalFix,totalVar,src}=calcMes(mesAtual,anoAtual,vis);
+  document.getElementById('orc-mes-label').textContent=MESES_F[mesAtual]+' '+anoAtual+' — Orçamento';
+
+  if(!st.orcamentos) st.orcamentos={...ORC_SUGESTOES};
+  const orc=st.orcamentos;
+
+  // Calc by cat (fixos + variáveis meus)
+  const porCat={};
+  st.cats.forEach(c=>porCat[c.id]=0);
+  st.fixos.filter(f=>f.pag==='eu').forEach(f=>{if(f.valor&&porCat[f.cat]!==undefined)porCat[f.cat]+=f.valor;});
+  src.filter(l=>l.cat!=='investimentos').forEach(l=>{if(porCat[l.cat]!==undefined)porCat[l.cat]+=(l.valor||0);});
+
+  const totalOrc=Object.values(orc).reduce((s,v)=>s+(v||0),0);
+  const totalGasto=Object.values(porCat).reduce((s,v)=>s+v,0);
+  const pctTotal=totalOrc>0?Math.round(totalGasto/totalOrc*100):0;
+  const barColorTotal=pctTotal>90?'var(--red)':pctTotal>70?'var(--amber)':'var(--green)';
+
+  document.getElementById('orc-resumo').innerHTML=`
+    <div class="orc-resumo-grid">
+      <div class="orc-resumo-item"><div class="orc-resumo-lbl">Orçado</div><div class="orc-resumo-val hv">${fmt(totalOrc)}</div></div>
+      <div class="orc-resumo-item"><div class="orc-resumo-lbl">Gasto</div><div class="orc-resumo-val mv-r hv">${fmt(totalGasto)}</div></div>
+      <div class="orc-resumo-item"><div class="orc-resumo-lbl">Restante</div><div class="orc-resumo-val hv" style="color:${totalOrc-totalGasto>=0?'var(--green)':'var(--red)'}">${fmt(totalOrc-totalGasto)}</div></div>
+    </div>
+    <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:4px">
+      <div style="height:100%;width:${Math.min(pctTotal,100)}%;background:${barColorTotal};border-radius:3px;transition:width .5s"></div>
+    </div>`;
+
+  const catsComOrc=st.cats.filter(c=>c.id!=='investimentos');
+  document.getElementById('orc-cats').innerHTML=catsComOrc.map(c=>{
+    const gasto=porCat[c.id]||0;
+    const limite=orc[c.id]||0;
+    const pct=limite>0?Math.round(gasto/limite*100):0;
+    const barColor=pct>100?'var(--red)':pct>80?'var(--amber)':c.cor;
+    const status=pct>100?'Estourou':'ok';
+    return '<div class="orc-card">'
+      +'<div class="orc-header">'
+      +'<div class="orc-cat-name"><span>'+c.icon+'</span>'+c.label+'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span class="orc-pct" style="color:'+barColor+'">'+pct+'%</span>'
+      +'<input class="orc-edit-inp" type="number" value="'+limite+'" placeholder="Teto" '
+      +'onchange="salvarOrcamento(''+c.id+'',this.value)" inputmode="numeric">'
+      +'</div></div>'
+      +'<div class="orc-bar-track"><div class="orc-bar-fill" style="width:'+Math.min(pct,100)+'%;background:'+barColor+'"></div></div>'
+      +'<div class="orc-footer">'
+      +'<span class="hv">Gasto: '+fmt(gasto)+'</span>'
+      +'<span class="hv" style="color:'+barColor+'">Limite: '+fmt(limite)+'</span>'
+      +'</div>'
+      +(pct>100?'<div style="font-size:11px;color:var(--red);margin-top:6px">⚠ Acima do limite em '+fmt(gasto-limite)+'</div>':'')
+      +'</div>';
+  }).join('');
+
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
+}
+
+function salvarOrcamento(catId, val){
+  if(!st.orcamentos) st.orcamentos={...ORC_SUGESTOES};
+  st.orcamentos[catId]=parseFloat(val)||0;
+  save();renderOrc();
+}
+
+function resetOrcamentos(){
+  st.orcamentos={...ORC_SUGESTOES};
+  save();renderOrc();toast('Orçamentos restaurados ✓');
+}
+
+// ═══ PATRIMONY CHART ═══
+function buildPatrimonyChart(){
+  if(!st.ativos||!st.ativos.length) return '';
+  // Build month-by-month cumulative aporte data
+  const allAportes=[];
+  st.ativos.forEach(a=>(a.aportes||[]).forEach(ap=>{if(ap.data)allAportes.push({data:ap.data,valor:ap.valor||0});}));
+  if(!allAportes.length) return '<div class="empty"><div class="empty-text">Registre aportes para ver o gráfico</div></div>';
+
+  allAportes.sort((a,b)=>a.data>b.data?1:-1);
+  const firstDate=allAportes[0].data.slice(0,7);
+  const now=mesKey(new Date().getMonth(),new Date().getFullYear());
+
+  // Generate all months from first aporte to now
+  const months=[];
+  let cur=firstDate;
+  while(cur<=now){
+    months.push(cur);
+    const [y,m]=cur.split('-').map(Number);
+    const nm=m===12?1:m+1;
+    const ny=m===12?y+1:y;
+    cur=ny+'-'+String(nm).padStart(2,'0');
+  }
+  if(months.length>12) months.splice(0,months.length-12);
+
+  // Cumulative aportes per month
+  const cumulative=months.map(mk=>{
+    return allAportes.filter(ap=>ap.data.slice(0,7)<=mk).reduce((s,ap)=>s+ap.valor,0);
+  });
+
+  const maxV=Math.max(...cumulative,1);
+  const W=340, H=140, PAD=40, PADB=24;
+  const pts=months.map((mk,i)=>{
+    const x=PAD+(i/(months.length-1||1))*(W-PAD*2);
+    const y=PADB+(1-cumulative[i]/maxV)*(H-PADB-16);
+    return {x,y,v:cumulative[i],lbl:MESES[parseInt(mk.split('-')[1])-1]};
+  });
+
+  let path='M'+pts.map(p=>p.x.toFixed(1)+','+p.y.toFixed(1)).join(' L');
+  let area='M'+pts[0].x.toFixed(1)+','+(H-PADB)+' L'+pts.map(p=>p.x.toFixed(1)+','+p.y.toFixed(1)).join(' L')+' L'+pts[pts.length-1].x.toFixed(1)+','+(H-PADB)+' Z';
+
+  const fmtK=v=>v>=1000?'R$'+(v/1000).toFixed(0)+'k':'R$'+Math.round(v);
+
+  return '<div class="chart-wrap"><svg class="chart-svg" viewBox="0 0 '+W+' '+H+'" width="100%">'
+    +'<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4ade80" stop-opacity="0.3"/><stop offset="100%" stop-color="#4ade80" stop-opacity="0"/></linearGradient></defs>'
+    +'<path d="'+area+'" fill="url(#cg)"/>'
+    +'<path d="'+path+'" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    +pts.map((p,i)=>{
+      const isLast=i===pts.length-1;
+      const showLbl=pts.length<=6||i%Math.ceil(pts.length/6)===0||isLast;
+      return (isLast?'<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="4" fill="#4ade80"/>':'')
+        +(showLbl?'<text x="'+p.x.toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle" font-size="9" fill="rgba(240,239,232,0.35)" font-family="DM Sans,sans-serif">'+p.lbl+'</text>':'')
+        +(isLast?'<text x="'+p.x.toFixed(1)+'" y="'+(p.y-8).toFixed(1)+'" text-anchor="middle" font-size="10" fill="#4ade80" font-family="DM Sans,sans-serif" font-weight="500">'+fmtK(p.v)+'</text>':'');
+    }).join('')
+    +'</svg></div>';
+}
+
 // ═══ RENDER ALL ═══
 function renderAll(){
   document.getElementById('mes-label').textContent=MESES[mesAtual]+' '+anoAtual;
   document.getElementById('topbar-title').textContent=MESES_F[mesAtual]+' '+anoAtual;
-  renderDash();renderFixos();renderVenc();renderDFC();renderConc();renderInv();renderConfig();
+  renderDash();renderFixos();renderVenc();renderDFC();renderConc();renderInv();renderOrc();renderConfig();
 }
 
 // ═══ NAVIGATION ═══
@@ -1343,6 +1511,56 @@ function exportCSV(){
   toast('Planilha exportada ✓');
 }
 
+// ═══ EXPORT PDF ═══
+function exportPDF(){
+  const {totalRec,totalFix,totalVar,totalInv,saldo,src}=calcMes(mesAtual,anoAtual,'meu');
+  const porCat={};
+  st.cats.forEach(c=>porCat[c.id]=0);
+  st.fixos.filter(f=>f.pag==='eu').forEach(f=>{if(f.valor&&porCat[f.cat]!==undefined)porCat[f.cat]+=f.valor;});
+  src.filter(l=>l.cat!=='investimentos').forEach(l=>{if(porCat[l.cat]!==undefined)porCat[l.cat]+=(l.valor||0);});
+
+  const catRows=st.cats.filter(c=>porCat[c.id]>0).sort((a,b)=>porCat[b.id]-porCat[a.id])
+    .map(c=>'<tr><td style="padding:6px 10px">'+c.icon+' '+c.label+'</td><td style="padding:6px 10px;text-align:right;font-weight:500">'+fmt(porCat[c.id])+'</td></tr>').join('');
+
+  const lancRows=[...src].sort((a,b)=>b.data>a.data?1:-1).slice(0,30)
+    .map(l=>{const cat=getCat(l.cat);const dia=l.data?l.data.split('-')[2]:'?';
+      return '<tr><td style="padding:5px 8px;font-size:12px">'+dia+'/'+MESES[mesAtual]+'</td><td style="padding:5px 8px;font-size:12px">'+cat.icon+' '+(l.desc||cat.label)+'</td><td style="padding:5px 8px;font-size:12px;text-align:right">'+fmt(l.valor)+'</td></tr>';
+    }).join('');
+
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Financas '+MESES[mesAtual]+' '+anoAtual+'</title>'
+    +'<style>body{font-family:DM Sans,Arial,sans-serif;color:#1a1a1a;max-width:700px;margin:0 auto;padding:24px}'
+    +'h1{font-size:22px;margin:0 0 4px}h2{font-size:15px;font-weight:500;margin:20px 0 8px;color:#444}'
+    +'.hero{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin:16px 0}'
+    +'.hero-item{background:#f8f8f6;border-radius:8px;padding:12px}'
+    +'.hero-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:4px}'
+    +'.hero-val{font-size:18px;font-weight:600}'
+    +'table{width:100%;border-collapse:collapse}tr:nth-child(even){background:#f8f8f6}'
+    +'th{background:#1a1a1a;color:white;padding:8px 10px;text-align:left;font-size:12px}'
+    +'.footer{margin-top:32px;font-size:11px;color:#aaa;text-align:center}'
+    +'</style></head><body>'
+    +'<h1>Relatório Financeiro — '+MESES_F[mesAtual]+' '+anoAtual+'</h1>'
+    +'<div style="font-size:12px;color:#888">Pedro Medina · Visão: Meu bolso</div>'
+    +'<div class="hero">'
+    +'<div class="hero-item"><div class="hero-lbl">Receita</div><div class="hero-val" style="color:#16a34a">'+fmt(totalRec)+'</div></div>'
+    +'<div class="hero-item"><div class="hero-lbl">Gastos</div><div class="hero-val" style="color:#dc2626">'+fmt(totalFix+totalVar)+'</div></div>'
+    +'<div class="hero-item"><div class="hero-lbl">Investido</div><div class="hero-val" style="color:#ca8a04">'+fmt(totalInv)+'</div></div>'
+    +'<div class="hero-item"><div class="hero-lbl">Saldo</div><div class="hero-val" style="color:'+(saldo>=0?'#16a34a':'#dc2626')+'">'+fmt(saldo)+'</div></div>'
+    +'</div>'
+    +'<h2>Por categoria</h2>'
+    +'<table><thead><tr><th>Categoria</th><th style="text-align:right">Total</th></tr></thead><tbody>'+catRows+'</tbody></table>'
+    +'<h2>Lançamentos (últimos 30)</h2>'
+    +'<table><thead><tr><th>Data</th><th>Descrição</th><th style="text-align:right">Valor</th></tr></thead><tbody>'+lancRows+'</tbody></table>'
+    +'<div class="footer">Gerado em '+new Date().toLocaleDateString('pt-BR')+' · Finanças Pedro Medina</div>'
+    +'</body></html>';
+
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='relatorio_'+MESES[mesAtual]+'_'+anoAtual+'.html';
+  a.click();
+  toast('Relatório exportado ✓ — abra no browser e use Ctrl+P para salvar como PDF');
+}
+
 // ═══ TOAST ═══
 let tt=null;
 function toast(msg){
@@ -1351,6 +1569,7 @@ function toast(msg){
 }
 
 // ═══ EXPOSE GLOBALS ═══
+window.salvarOrcamento=salvarOrcamento;window.resetOrcamentos=resetOrcamentos;
 window.irPara=irPara;window.mudarMes=mudarMes;window.setVisao=setVisao;window.setDFC=setDFC;
 window.abrirSheet=abrirSheet;window.fecharSheet=fecharSheet;window.setFP=setFP;window.setFCartao=setFCartao;
 window.setPag=setPag;window.setFCat=setFCat;window.setDataBtn=setDataBtn;window.salvarLanc=salvarLanc;
