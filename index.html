@@ -843,14 +843,19 @@ function buildDivRow(div){
 }
 function buildAportesHtml(a){
   if(!a.aportes||!a.aportes.length) return '';
-  var rows=[...(a.aportes)].sort(function(x,y){return y.data>x.data?1:-1;}).slice(0,5).map(function(ap){
-    return '<div class="aporte-item">'
-      +'<div style="flex:1"><div style="font-size:13px">'+(ap.obs||'Aporte')+'</div>'
-      +'<div style="font-size:11px;color:var(--text3)">'+(ap.data||'—')+'</div></div>'
+  var rows='';
+  var sorted=[].concat(a.aportes).sort(function(x,y){return y.data>x.data?1:-1;}).slice(0,5);
+  for(var i=0;i<sorted.length;i++){
+    var ap=sorted[i];
+    rows+='<div class="aporte-item">'
+      +'<div style="flex:1">'
+      +'<div style="font-size:13px">'+(ap.obs||'Aporte')+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+(ap.data||'—')+'</div>'
+      +'</div>'
       +'<div style="font-size:14px;font-weight:500;color:var(--gold)">'+fmt(ap.valor)+'</div>'
-      +'<button class="del-btn" onclick="delAporte(''+a.id+'',''+ap.id+'',event)">×</button>'
+      +'<button class="del-btn" data-aid="'+a.id+'" data-apid="'+ap.id+'" onclick="handleDelAporte(this,event)">×</button>'
       +'</div>';
-  }).join('');
+  }
   return '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
     +'<div class="card-title" style="margin-bottom:8px">Histórico de aportes</div>'
     +rows+'</div>';
@@ -928,6 +933,12 @@ function atualizarValor(id){
   a.valorAtual=v;save();renderInv();toast('Valor atualizado ✓');
 }
 
+function handleDelAporte(btn,e){
+  e.stopPropagation();
+  var aid=btn.getAttribute('data-aid');
+  var apid=btn.getAttribute('data-apid');
+  delAporte(aid,apid,e);
+}
 function delAporte(ativoId,apId,e){
   e.stopPropagation();
   if(!confirm('Remover aporte?'))return;
