@@ -306,11 +306,14 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 
   <!-- DASHBOARD -->
   <div class="screen active" id="screen-dash">
-    <div class="pill-row">
-      <button class="pill active" data-v="meu" onclick="setVisao(this)">Meu bolso</button>
-      <button class="pill" data-v="real" onclick="setVisao(this)">Custo real</button>
-      <button class="pill" data-v="caixa" onclick="setVisao(this)">Caixa</button>
-      <button class="pill" data-v="comp" onclick="setVisao(this)">Competência</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div class="pill-row" style="margin-bottom:0;flex:1">
+        <button class="pill active" data-v="meu" onclick="setVisao(this)">Meu bolso</button>
+        <button class="pill" data-v="real" onclick="setVisao(this)">Custo real</button>
+        <button class="pill" data-v="caixa" onclick="setVisao(this)">Caixa</button>
+        <button class="pill" data-v="comp" onclick="setVisao(this)">Competência</button>
+      </div>
+      <button onclick="abrirSheet(null)" style="flex-shrink:0;margin-left:10px;width:42px;height:42px;border-radius:50%;background:var(--gold);color:#0a0a0f;border:none;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:300;box-shadow:0 2px 12px rgba(201,169,110,0.4)">+</button>
     </div>
     <div class="hero">
       <div class="hero-label">Saldo disponível</div>
