@@ -244,6 +244,31 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .add-cat{display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:11px;cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px}
 .add-cat:hover{color:var(--gold);border-color:var(--gold)}
 
+/* DRILL-DOWN CATEGORIA */
+.drilldown-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.drilldown-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.drilldown-title{font-family:var(--font-display);font-size:20px}
+.drilldown-subtitle{font-size:12px;color:var(--text3);margin-top:2px}
+.drilldown-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.drilldown-stat{background:var(--bg3);border-radius:var(--radius-sm);padding:10px 12px}
+.drilldown-stat-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.drilldown-stat-val{font-size:15px;font-weight:500}
+.drilldown-orc{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.drilldown-orc-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px}
+.drilldown-orc-bar{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.drilldown-orc-fill{height:100%;border-radius:3px;transition:width .4s}
+.drilldown-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.drilldown-item:last-child{border-bottom:none}
+.drilldown-item-body{flex:1;min-width:0}
+.drilldown-item-name{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drilldown-item-sub{font-size:11px;color:var(--text3);margin-top:2px;display:flex;gap:5px;align-items:center}
+.drilldown-variation{font-size:12px;font-weight:500}
+.drilldown-variation.up{color:var(--red)}
+.drilldown-variation.down{color:var(--green)}
+.drilldown-variation.flat{color:var(--text3)}
+.cat-bar-clickable{cursor:pointer;transition:opacity .15s}
+.cat-bar-clickable:hover{opacity:.8}
+
 /* ORÇAMENTO */
 .orc-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:8px}
 .orc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -543,6 +568,15 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 </div>
 </div>
 
+<!-- DRILL-DOWN MODAL -->
+<div class="overlay" id="ov-drilldown">
+<div class="sheet">
+  <div class="sh-handle"></div>
+  <div id="drilldown-content"></div>
+  <button class="btn-ghost" onclick="fecharSheet('ov-drilldown')" style="margin-top:4px">Fechar</button>
+</div>
+</div>
+
 <!-- CONFIRM DIALOG -->
 <div class="overlay" id="ov-confirm">
 <div class="confirm-box">
@@ -820,7 +854,7 @@ function renderDash(){
   src.filter(l=>l.cat!=='investimentos').forEach(l=>{if(porCat[l.cat]!==undefined)porCat[l.cat]+=(l.valor||0);});
   const maxV=Math.max(...Object.values(porCat),1);
   document.getElementById('cat-bars').innerHTML=st.cats.filter(c=>porCat[c.id]>0).sort((a,b)=>porCat[b.id]-porCat[a.id])
-    .map(c=>`<div class="cat-bar">
+    .map(c=>`<div class="cat-bar cat-bar-clickable" onclick="abrirDrilldown('${c.id}')">
       <div class="cat-bar-head"><span class="cat-bar-name"><span>${c.icon}</span>${c.label}</span><span class="cat-bar-amount hv">${fmt(porCat[c.id])}</span></div>
       <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round(porCat[c.id]/maxV*100)}%;background:${c.cor}"></div></div>
     </div>`).join('')||'<div class="empty"><div class="empty-text">Nenhum gasto no período</div></div>';
@@ -1120,7 +1154,7 @@ function renderOrc(){
     const pct=limite>0?Math.round(gasto/limite*100):0;
     const barColor=pct>100?'var(--red)':pct>80?'var(--amber)':c.cor;
     const status=pct>100?'Estourou':'ok';
-    return '<div class="orc-card">'
+    return '<div class="orc-card cat-bar-clickable" onclick="window.orcClick(event)" data-cid="'+c.id+'">'+ 
       +'<div class="orc-header">'
       +'<div class="orc-cat-name"><span>'+c.icon+'</span>'+c.label+'</div>'
       +'<div style="display:flex;align-items:center;gap:8px">'
@@ -1579,7 +1613,143 @@ function toast(msg){
   clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2400);
 }
 
+// ═══ DRILL-DOWN ═══
+function abrirDrilldown(catId){
+  const cat = getCat(catId);
+  const mode = (visao==='comp')?'comp':'caixa';
+  const lancs = getLancs(mesAtual, anoAtual, mode);
+  const src = visao==='real' ? lancs : lancs.filter(l=>l.pag==='eu');
+
+  // Lançamentos desta categoria
+  const catLancs = src.filter(l=>l.cat===catId).sort((a,b)=>b.valor-a.valor);
+
+  // Fixos desta categoria
+  const fixosSrc = st.fixos.filter(f=>(visao==='real'?true:f.pag==='eu') && f.cat===catId);
+  const totalFixos = fixosSrc.reduce((s,f)=>s+(f.valor||0),0);
+  const totalVar = catLancs.reduce((s,l)=>s+(l.valor||0),0);
+  const totalMes = totalFixos + totalVar;
+
+  // Mês anterior para comparação
+  let pm=mesAtual-1, pa=anoAtual;
+  if(pm<0){pm=11;pa--;}
+  const prevLancs = getLancs(pm,pa,mode).filter(l=>l.cat===catId&&(visao==='real'?true:l.pag==='eu'));
+  const prevFixos = st.fixos.filter(f=>(visao==='real'?true:f.pag==='eu')&&f.cat===catId).reduce((s,f)=>s+(f.valor||0),0);
+  const totalPrev = prevFixos + prevLancs.reduce((s,l)=>s+(l.valor||0),0);
+  const variacao = totalPrev>0 ? ((totalMes-totalPrev)/totalPrev*100) : 0;
+  const varStr = totalPrev===0 ? '—' : (variacao>0?'+':'')+variacao.toFixed(0)+'%';
+  const varCls = totalPrev===0?'flat':variacao>0?'up':'down';
+
+  // Orçamento desta categoria
+  const orc = st.orcamentos && st.orcamentos[catId] ? st.orcamentos[catId] : 0;
+  const orcPct = orc>0 ? Math.min(Math.round(totalMes/orc*100),100) : 0;
+  const orcColor = orcPct>100?'var(--red)':orcPct>80?'var(--amber)':cat.cor;
+
+  // Build HTML
+  let html = '<div class="drilldown-header">'
+    +'<div class="drilldown-icon" style="background:'+cat.cor+'20">'+cat.icon+'</div>'
+    +'<div><div class="drilldown-title">'+cat.label+'</div>'
+    +'<div class="drilldown-subtitle">'+MESES_F[mesAtual]+' '+anoAtual+'</div></div>'
+    +'</div>';
+
+  // Stats
+  html += '<div class="drilldown-stats">'
+    +'<div class="drilldown-stat"><div class="drilldown-stat-lbl">Total</div><div class="drilldown-stat-val hv" style="color:'+cat.cor+'">'+fmt(totalMes)+'</div></div>'
+    +'<div class="drilldown-stat"><div class="drilldown-stat-lbl">Mês anterior</div><div class="drilldown-stat-val hv">'+fmt(totalPrev)+'</div></div>'
+    +'<div class="drilldown-stat"><div class="drilldown-stat-lbl">Variação</div><div class="drilldown-stat-val drilldown-variation '+varCls+'">'+varStr+'</div></div>'
+    +'</div>';
+
+  // Orçamento bar (if set)
+  if(orc>0){
+    html += '<div class="drilldown-orc">'
+      +'<div class="drilldown-orc-row"><span>Orçamento: '+fmt(orc)+'</span><span style="color:'+orcColor+'">'+orcPct+'% utilizado</span></div>'
+      +'<div class="drilldown-orc-bar"><div class="drilldown-orc-fill" style="width:'+orcPct+'%;background:'+orcColor+'"></div></div>'
+      +(totalMes>orc?'<div style="font-size:11px;color:var(--red);margin-top:5px">⚠ Acima do limite em '+fmt(totalMes-orc)+'</div>':'')
+      +'</div>';
+  }
+
+  // Fixos desta categoria
+  if(fixosSrc.length>0){
+    html += '<div style="font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Fixos</div>';
+    fixosSrc.forEach(function(f){
+      const pagB = f.pag==='eu'?'<span class="badge b-eu">eu</span>':'<span class="badge b-pai">Cassiano</span>';
+      html += '<div class="drilldown-item">'
+        +'<div class="drilldown-item-body"><div class="drilldown-item-name">'+f.desc+'</div>'
+        +'<div class="drilldown-item-sub">Fixo mensal '+pagB+'</div></div>'
+        +'<div style="font-size:14px;font-weight:500" class="hv">'+fmt(f.valor)+'</div>'
+        +'</div>';
+    });
+  }
+
+  // Lançamentos variáveis
+  if(catLancs.length>0){
+    html += '<div style="font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:'+(fixosSrc.length>0?'12px':'0')+'px 0 8px">Variáveis</div>';
+    catLancs.forEach(function(l){
+      const dia = l.data ? l.data.split('-')[2] : '?';
+      const ctObj = l.cartaoId ? getCartao(l.cartaoId) : null;
+      const fpB = l.fp==='credito'?'<span class="badge b-cred">crédito</span>':'<span class="badge b-deb">débito</span>';
+      const ctB = ctObj?'<span class="'+(ctObj.tipo==='visa'?'cc-visa':'cc-mc')+'">'+ctObj.nome+'</span>':'';
+      html += '<div class="drilldown-item">'
+        +'<div class="drilldown-item-body">'
+        +'<div class="drilldown-item-name">'+(l.desc||cat.label)+'</div>'
+        +'<div class="drilldown-item-sub">Dia '+dia+' '+fpB+ctB+'</div>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:6px">'
+        +'<div style="font-size:14px;font-weight:500" class="hv">'+fmt(l.valor)+'</div>'
+        +'<button class="edit-btn" onclick="editDrillLanc(''+l.id+'')">✎</button>'
+        +'<button class="del-btn" onclick="delDrillLanc(''+l.id+'')">×</button>'
+        +'</div>'
+        +'</div>';
+    });
+  }
+
+  if(!catLancs.length && !fixosSrc.length){
+    html += '<div class="empty"><div class="empty-icon">'+cat.icon+'</div><div class="empty-text">Nenhum lançamento nesta categoria</div></div>';
+  }
+
+  // Botão para adicionar nesta categoria
+  html += '<button class="btn-ghost" style="margin-top:12px" onclick="addLancCategoria(''+catId+'')">+ Lançamento em '+cat.label+'</button>';
+
+  if(valoresOcultos) {
+    setTimeout(function(){document.querySelectorAll('.hv').forEach(function(el){el.classList.add('hidden');});},50);
+  }
+
+  document.getElementById('drilldown-content').innerHTML = html;
+  document.getElementById('ov-drilldown').classList.add('open');
+}
+
+function editDrillLanc(id){
+  fecharSheet('ov-drilldown');
+  setTimeout(function(){ abrirSheet(id); }, 200);
+}
+
+function delDrillLanc(id){
+  st.lancs = st.lancs.filter(function(l){ return l.id !== id; });
+  save();
+  toast('Removido');
+  // Refresh drilldown - find what category this was
+  renderAll();
+  fecharSheet('ov-drilldown');
+}
+
+function addLancCategoria(catId){
+  fecharSheet('ov-drilldown');
+  setTimeout(function(){
+    fCat = catId;
+    abrirSheet(null);
+    // Set the category chip after modal opens
+    setTimeout(function(){
+      var chips = document.getElementById('chips-cat');
+      if(chips){
+        chips.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('on'); });
+        var target = chips.querySelector('[onclick*="'+catId+'"]');
+        if(target) target.classList.add('on');
+      }
+    }, 100);
+  }, 200);
+}
+
 // ═══ EXPOSE GLOBALS ═══
+window.orcClick=function(e){var el=e.currentTarget;window.abrirDrilldown(el.getAttribute('data-cid'));};window.abrirDrilldown=abrirDrilldown;window.editDrillLanc=editDrillLanc;window.delDrillLanc=delDrillLanc;window.addLancCategoria=addLancCategoria;
 window.pinPress=pinPress;window.pinDel=pinDel;window.salvarOrcamento=salvarOrcamento;window.resetOrcamentos=resetOrcamentos;
 window.toggleHide=toggleHide;window.exportPDF=exportPDF;window.confirmDel=confirmDel;
 window.irPara=irPara;window.mudarMes=mudarMes;window.setVisao=setVisao;window.setDFC=setDFC;
