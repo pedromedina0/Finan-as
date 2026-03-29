@@ -443,7 +443,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   <div class="sh-title" id="lanc-title">Novo lançamento</div>
   <div class="valor-wrap">
     <span class="valor-prefix">R$</span>
-    <input class="valor-inp" type="number" id="inp-val" placeholder="0" inputmode="decimal" step="0.01">
+    <input class="valor-inp" type="text" id="inp-val" placeholder="0,00" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
   </div>
   <div class="fg"><span class="fl">Categoria</span><div class="chips" id="chips-cat"></div></div>
   <div class="fg">
@@ -507,7 +507,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   <div class="sh-title" id="aporte-title">Registrar aporte</div>
   <div class="valor-wrap">
     <span class="valor-prefix">R$</span>
-    <input class="valor-inp" type="number" id="aporte-val" placeholder="0" inputmode="decimal" step="0.01">
+    <input class="valor-inp" type="text" id="aporte-val" placeholder="0,00" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
   </div>
   <div class="fg"><span class="fl">Data do aporte</span><input class="fi" type="date" id="aporte-data"></div>
   <div class="fg"><span class="fl">Observação (opcional)</span><input class="fi" type="text" id="aporte-obs" placeholder="Ex: DCA mensal..."></div>
@@ -536,7 +536,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   <div class="sh-handle"></div>
   <div class="sh-title" id="conc-title">Conciliar mês</div>
   <div id="conc-faturas-form"></div>
-  <div class="fg" style="margin-top:8px"><span class="fl">Saldo real Itaú (extrato)</span><input class="fi" type="number" id="conc-saldo-real" placeholder="0,00" inputmode="decimal" step="0.01"></div>
+  <div class="fg" style="margin-top:8px"><span class="fl">Saldo real Itaú (extrato)</span><input class="fi" type="text" id="conc-saldo-real" placeholder="0,00" inputmode="decimal"></div>
   <div class="fg"><span class="fl">Observação</span><input class="fi" type="text" id="conc-obs" placeholder="Ex: Encontrei compra esquecida..."></div>
   <button class="btn-main" onclick="salvarConc()">Salvar conciliação</button>
   <button class="btn-ghost" onclick="fecharSheet('ov-conc')">Cancelar</button>
@@ -1284,6 +1284,10 @@ function abrirSheet(editId){
   }
   document.getElementById('ov-lanc').classList.add('open');
   setTimeout(()=>document.getElementById('inp-val').focus(),300);
+  document.getElementById('inp-val').onblur=function(){
+    var v=parseFloat(this.value.replace(',','.'));
+    if(!isNaN(v)&&v>0) this.value=v.toFixed(2).replace('.',',');
+  };
 }
 function fecharSheet(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(ov=>{ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open');});});
@@ -1310,7 +1314,7 @@ function setDataBtn(v,btn){
   else if(v==='ontem') document.getElementById('inp-data').value=yesterdayStr();
 }
 function salvarLanc(){
-  const val=parseFloat(document.getElementById('inp-val').value);
+  const val=parseFloat(document.getElementById('inp-val').value.replace(',','.'));
   if(!val||val<=0){toast('Informe um valor válido');return;}
   if(fFP==='credito'&&!fCartao&&st.cartoes.length>0){toast('Selecione o cartão');return;}
   const dataFinal=document.getElementById('inp-data').value||todayStr();
@@ -1376,7 +1380,7 @@ function abrirAporte(ativoId){
   setTimeout(()=>document.getElementById('aporte-val').focus(),300);
 }
 function salvarAporte(){
-  const val=parseFloat(document.getElementById('aporte-val').value);
+  const val=parseFloat(document.getElementById('aporte-val').value.replace(',','.'));
   if(!val||val<=0){toast('Informe um valor');return;}
   const a=st.ativos.find(x=>x.id===ativoAtualId);if(!a)return;
   if(!a.aportes) a.aportes=[];
@@ -1461,7 +1465,7 @@ function abrirConc(){
 }
 function salvarConc(){
   const key=mesKey(mesAtual,anoAtual);
-  const real=parseFloat(document.getElementById('conc-saldo-real').value);
+  const real=parseFloat(document.getElementById('conc-saldo-real').value.replace(',','.'));
   if(isNaN(real)){toast('Informe o saldo real');return;}
   const {teorico}=calcSaldoTeorico(mesAtual,anoAtual);
   const faturas={};
