@@ -1695,8 +1695,8 @@ function abrirDrilldown(catId){
         +'</div>'
         +'<div style="display:flex;align-items:center;gap:6px">'
         +'<div style="font-size:14px;font-weight:500" class="hv">'+fmt(l.valor)+'</div>'
-        +'<button class="edit-btn" onclick="editDrillLanc(''+l.id+'')">✎</button>'
-        +'<button class="del-btn" onclick="delDrillLanc(''+l.id+'')">×</button>'
+        +'<button class="edit-btn" data-eid="'+l.id+'" onclick="window.editDrillLanc(this.dataset.eid)">✎</button>'
+        +'<button class="del-btn" data-did="'+l.id+'" onclick="window.delDrillLanc(this.dataset.did)">×</button>'
         +'</div>'
         +'</div>';
     });
@@ -1707,7 +1707,7 @@ function abrirDrilldown(catId){
   }
 
   // Botão para adicionar nesta categoria
-  html += '<button class="btn-ghost" style="margin-top:12px" onclick="addLancCategoria(''+catId+'')">+ Lançamento em '+cat.label+'</button>';
+  html += '<button class="btn-ghost" style="margin-top:12px" data-cid2="'+catId+'" onclick="window.addLancCategoria(this.dataset.cid2)">+ Lançamento em '+cat.label+'</button>';
 
   if(valoresOcultos) {
     setTimeout(function(){document.querySelectorAll('.hv').forEach(function(el){el.classList.add('hidden');});},50);
