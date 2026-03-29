@@ -244,6 +244,14 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .add-cat{display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:11px;cursor:pointer;font-size:13px;color:var(--text3);transition:all .15s;margin-top:6px}
 .add-cat:hover{color:var(--gold);border-color:var(--gold)}
 
+/* CARTEIRA */
+.carteira-hero{background:linear-gradient(135deg,#1a1209 0%,#1f1a0a 100%);border:1px solid rgba(251,191,36,0.2);border-radius:var(--radius);padding:20px;margin-bottom:10px;position:relative;overflow:hidden}
+.carteira-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(251,191,36,0.12) 0%,transparent 70%);pointer-events:none}
+.mov-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.mov-item:last-child{border-bottom:none}
+.mov-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.badge-esp{background:rgba(251,191,36,0.15);color:var(--amber);font-size:9px;font-weight:500;letter-spacing:.4px;padding:2px 6px;border-radius:4px;text-transform:uppercase}
+
 /* DRILL-DOWN CATEGORIA */
 .drilldown-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .drilldown-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
@@ -441,6 +449,22 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     <button class="btn-ghost" style="margin-top:12px" onclick="resetOrcamentos()">Restaurar sugestões padrão</button>
   </div>
 
+  <!-- CARTEIRA -->
+  <div class="screen" id="screen-cart">
+    <div class="carteira-hero">
+      <div class="hero-label">Dinheiro em espécie</div>
+      <div class="hero-value hv" id="cart-saldo" style="color:var(--amber)">R$ 0</div>
+      <div class="hero-meta">
+        <div class="hmi"><span class="hml">Entradas</span><span class="hmv hv" id="cart-entradas" style="color:var(--green)">R$ 0</span></div>
+        <div class="hmi"><span class="hml">Saídas</span><span class="hmv hv" id="cart-saidas" style="color:var(--red)">R$ 0</span></div>
+      </div>
+    </div>
+    <div class="sec">Movimentações</div>
+    <div class="card" id="cart-lista"></div>
+    <button class="btn-ghost" style="margin-top:8px" onclick="abrirModalCarteira('entrada')">+ Entrada (saque, recebimento)</button>
+    <button class="btn-ghost" style="margin-top:6px" onclick="abrirModalCarteira('saida')">− Saída (gasto em espécie)</button>
+  </div>
+
   <!-- CONFIG -->
   <div class="screen" id="screen-config">
     <div class="sec">Categorias</div>
@@ -479,7 +503,11 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     </div>
   </div>
   <div class="fg" id="g-cartao" style="display:none"><span class="fl">Qual cartão?</span><div class="chips" id="chips-cartao"></div></div>
-  <div class="fg" id="g-fatura" style="display:none"><span class="fl">Mês da fatura</span><input class="fi" type="month" id="inp-fat"></div>
+  <div class="fg" id="g-fatura" style="display:none"><span class="fl">Mês da primeira fatura</span><input class="fi" type="month" id="inp-fat"></div>
+  <div class="fg" id="g-parcelas" style="display:none">
+    <span class="fl">Parcelas</span>
+    <div class="chips" id="chips-parcelas"></div>
+  </div>
   <div class="fg">
     <span class="fl">Pago por</span>
     <div class="chips">
@@ -577,6 +605,26 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 </div>
 </div>
 
+<!-- MODAL CARTEIRA -->
+<div class="overlay" id="ov-cart">
+<div class="sheet">
+  <div class="sh-handle"></div>
+  <div class="sh-title" id="cart-modal-title">Nova movimentação</div>
+  <div class="valor-wrap">
+    <span class="valor-prefix">R$</span>
+    <input class="valor-inp" type="text" id="cart-val" placeholder="0,00" inputmode="decimal">
+  </div>
+  <div class="fg" id="cart-cat-group" style="display:none">
+    <span class="fl">Categoria</span>
+    <div class="chips" id="cart-chips-cat"></div>
+  </div>
+  <div class="fg"><span class="fl">Descrição (opcional)</span><input class="fi" type="text" id="cart-desc" placeholder="Ex: Saque banco, almoço..."></div>
+  <div class="fg"><span class="fl">Data</span><input class="fi" type="date" id="cart-data"></div>
+  <button class="btn-main" onclick="salvarCarteira()">Registrar</button>
+  <button class="btn-ghost" onclick="fecharSheet('ov-cart')">Cancelar</button>
+</div>
+</div>
+
 <!-- CONFIRM DIALOG -->
 <div class="overlay" id="ov-confirm">
 <div class="confirm-box">
@@ -612,6 +660,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   </button>
   <button class="nav-btn" onclick="irPara('orc',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M2 7h20M2 17h20"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Orçam.
+  </button>
+  <button class="nav-btn" onclick="irPara('cart',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 8h20M2 8a2 2 0 012-2h16a2 2 0 012 2M2 8v10a2 2 0 002 2h16a2 2 0 002-2V8M6 12h4"/></svg>Carteira
   </button>
   <button class="nav-btn" onclick="irPara('config',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Config
@@ -693,7 +744,7 @@ const ORC_SUGESTOES = {
 function defaultState() {
   const ativos = JSON.parse(JSON.stringify(ATIVOS_DEF));
   ativos[0].aportes = [...BTC_APORTES];
-  return {lancs:[...LANCS_HIST],fixos:[...FIXOS_DEF],receitas:[...REC_DEF],cats:[...CATS_DEF],cartoes:[...CARTOES_DEF],ativos,conciliacoes:[],orcamentos:{...ORC_SUGESTOES}};
+  return {lancs:[...LANCS_HIST],fixos:[...FIXOS_DEF],receitas:[...REC_DEF],cats:[...CATS_DEF],cartoes:[...CARTOES_DEF],ativos,conciliacoes:[],orcamentos:{...ORC_SUGESTOES},carteira:[],saldoEspecie:0};
 }
 function load() {
   try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch(e){}
@@ -712,7 +763,7 @@ let st = load();
 let mesAtual = new Date().getMonth();
 let anoAtual = new Date().getFullYear();
 let visao = 'meu', visaoDFC = 'caixa';
-let fFP='debito', fPag='eu', fCat='alimentacao', fCartao=null, fEditId=null;
+let fFP='debito', fPag='eu', fCat='alimentacao', fCartao=null, fEditId=null, fParcelas=1;
 let xFP='debito', xPag='eu', xCat='moradia';
 let ativoAtualId=null, ativoTipoSel='Cripto';
 let valoresOcultos = false;
@@ -860,12 +911,18 @@ function renderDash(){
     </div>`).join('')||'<div class="empty"><div class="empty-text">Nenhum gasto no período</div></div>';
 
   // Transactions
-  const recent=[...src].sort((a,b)=>b.data>a.data?1:-1);
+  // Add carteira saidas as special items in the list
+  const carteiraItems=(st.carteira||[]).filter(function(m){
+    return m.tipo==='saida'&&m.data&&m.data.startsWith(mesKey(mesAtual,anoAtual));
+  }).map(function(m){
+    return {id:m.id,valor:m.valor,cat:m.cat||'outros',fp:'especie',pag:'eu',desc:m.desc,data:m.data,fatura:null,cartaoId:null,_especie:true};
+  });
+  const recent=[...src,...carteiraItems].sort((a,b)=>b.data>a.data?1:-1);
   if(!recent.length){document.getElementById('lista-lancs').innerHTML='<div class="empty"><div class="empty-icon">✦</div><div class="empty-text">Nenhum lançamento ainda</div></div>';return;}
   document.getElementById('lista-lancs').innerHTML=recent.map(l=>{
     const cat=getCat(l.cat);
     const dia=l.data?parseInt(l.data.split('-')[2]):'?';
-    const fpB=l.fp==='credito'?'<span class="badge b-cred">crédito</span>':'<span class="badge b-deb">débito</span>';
+    const fpB=l._especie?'<span class="badge-esp">espécie</span>':(l.fp==='credito'?'<span class="badge b-cred">crédito</span>':'<span class="badge b-deb">débito</span>');
     const pagB=l.pag==='eu'?'<span class="badge b-eu">eu</span>':'<span class="badge b-pai">Cassiano</span>';
     const ctObj=l.cartaoId?getCartao(l.cartaoId):null;
     const ctB=ctObj?'<span class="'+(ctObj.tipo==='visa'?'cc-visa':'cc-mc')+'">'+ctObj.nome+'</span>':'';
@@ -1160,7 +1217,7 @@ function renderOrc(){
       +'<div style="display:flex;align-items:center;gap:8px">'
       +'<span class="orc-pct" style="color:'+barColor+'">'+pct+'%</span>'
       +'<input class="orc-edit-inp" type="number" value="'+limite+'" placeholder="Teto" '
-      +'onchange="salvarOrcamento(\"'+c.id+'\",this.value)" inputmode="numeric">'
+      +'onclick="event.stopPropagation()" onchange="window.salvarOrcamento(\"'+c.id+'\",this.value)" oninput="event.stopPropagation()" inputmode="numeric">'
       +'</div></div>'
       +'<div class="orc-bar-track"><div class="orc-bar-fill" style="width:'+Math.min(pct,100)+'%;background:'+barColor+'"></div></div>'
       +'<div class="orc-footer">'
@@ -1241,11 +1298,102 @@ function buildPatrimonyChart(){
     +'</svg></div>';
 }
 
+// ═══ CARTEIRA ═══
+function renderCart(){
+  if(!st.carteira) st.carteira=[];
+  if(!st.saldoEspecie) st.saldoEspecie=0;
+
+  // Recalc saldo from movimentações
+  const saldo=st.carteira.reduce((s,m)=>s+(m.tipo==='entrada'?m.valor:-m.valor),0);
+  st.saldoEspecie=saldo;
+
+  const entradas=st.carteira.filter(m=>m.tipo==='entrada').reduce((s,m)=>s+m.valor,0);
+  const saidas=st.carteira.filter(m=>m.tipo==='saida').reduce((s,m)=>s+m.valor,0);
+
+  const cs=document.getElementById('cart-saldo');
+  if(cs){ cs.textContent=fmt(saldo); cs.style.color=saldo>=0?'var(--amber)':'var(--red)'; }
+  const ce=document.getElementById('cart-entradas');
+  const cs2=document.getElementById('cart-saidas');
+  if(ce) ce.textContent=fmt(entradas);
+  if(cs2) cs2.textContent=fmt(saidas);
+
+  const lista=document.getElementById('cart-lista');
+  if(!lista) return;
+  const recent=[...st.carteira].sort((a,b)=>b.data>a.data?1:-1);
+  if(!recent.length){
+    lista.innerHTML='<div class="empty"><div class="empty-icon">💵</div><div class="empty-text">Nenhuma movimentação ainda</div></div>';
+    return;
+  }
+  lista.innerHTML=recent.map(function(m){
+    const cat=m.tipo==='saida'?getCat(m.cat):{label:'Entrada',icon:'💰',cor:'#4ade80'};
+    const dia=m.data?m.data.split('-')[2]:'?';
+    return '<div class="mov-item">'
+      +'<div class="mov-icon" style="background:'+cat.cor+'20">'+cat.icon+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:14px">'+(m.desc||cat.label)+' <span class="badge-esp">espécie</span></div>'
+      +'<div style="font-size:11px;color:var(--text3);margin-top:2px">Dia '+dia+(m.tipo==='entrada'?' · entrada':' · saída')+'</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px">'
+      +'<div style="font-size:15px;font-weight:500;color:'+(m.tipo==='entrada'?'var(--green)':'var(--red)')+'" class="hv">'+(m.tipo==='entrada'?'+':'-')+fmt(m.valor)+'</div>'
+      +'<button class="del-btn" data-mid="'+m.id+'" onclick="delCarteira(this.dataset.mid)">×</button>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(function(el){el.classList.add('hidden');});
+}
+
+let cartTipo='entrada';
+function abrirModalCarteira(tipo){
+  cartTipo=tipo;
+  document.getElementById('cart-modal-title').textContent=tipo==='entrada'?'Entrada em espécie':'Saída em espécie';
+  document.getElementById('cart-val').value='';
+  document.getElementById('cart-desc').value='';
+  document.getElementById('cart-data').value=todayStr();
+  const catGrp=document.getElementById('cart-cat-group');
+  if(tipo==='saida'){
+    catGrp.style.display='block';
+    document.getElementById('cart-chips-cat').innerHTML=st.cats.map(function(c){
+      return '<button class="chip'+(c.id===fCat?' on':'')+'" data-cid="'+c.id+'" onclick="setCartCat(this)">'+c.icon+' '+c.label+'</button>';
+    }).join('');
+  } else { catGrp.style.display='none'; }
+  document.getElementById('ov-cart').classList.add('open');
+  setTimeout(function(){document.getElementById('cart-val').focus();},300);
+}
+
+let cartCatSel='alimentacao';
+function setCartCat(btn){
+  cartCatSel=btn.dataset.cid;
+  btn.closest('.chips').querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
+  btn.classList.add('on');
+}
+
+function salvarCarteira(){
+  const val=parseFloat(document.getElementById('cart-val').value.replace(',','.'));
+  if(!val||val<=0){toast('Informe um valor');return;}
+  if(!st.carteira) st.carteira=[];
+  st.carteira.push({
+    id:'cw'+Date.now(),
+    tipo:cartTipo,
+    valor:val,
+    cat:cartTipo==='saida'?cartCatSel:null,
+    desc:document.getElementById('cart-desc').value.trim(),
+    data:document.getElementById('cart-data').value,
+  });
+  save();fecharSheet('ov-cart');renderCart();
+  toast(cartTipo==='entrada'?'Entrada registrada ✓':'Saída registrada ✓');
+}
+
+function delCarteira(id){
+  if(!st.carteira) return;
+  st.carteira=st.carteira.filter(function(m){return m.id!==id;});
+  save();renderCart();toast('Removido');
+}
+
 // ═══ RENDER ALL ═══
 function renderAll(){
   document.getElementById('mes-label').textContent=MESES[mesAtual]+' '+anoAtual;
   document.getElementById('topbar-title').textContent=MESES_F[mesAtual]+' '+anoAtual;
-  renderDash();renderFixos();renderVenc();renderDFC();renderConc();renderInv();renderOrc();renderConfig();
+  renderDash();renderFixos();renderVenc();renderDFC();renderConc();renderInv();renderOrc();renderCart();renderConfig();
 }
 
 // ═══ NAVIGATION ═══
@@ -1334,9 +1482,18 @@ function setFP(v,btn){
   if(v==='credito'){
     fCartao=st.cartoes[0]?.id||null;
     document.getElementById('chips-cartao').innerHTML=st.cartoes.map(c=>`<button class="chip ${c.id===fCartao?'on':''}" onclick="setFCartao('${c.id}',this)">${c.nome}</button>`).join('');
+    fParcelas=1;
+    document.getElementById('g-parcelas').style.display='block';
+    var pchips='';
+    for(var p=1;p<=12;p++) pchips+='<button class="chip'+(p===1?' on':'')+'" onclick="setParcelas('+p+',this)">'+p+'x</button>';
+    document.getElementById('chips-parcelas').innerHTML=pchips;
+  } else {
+    document.getElementById('g-parcelas').style.display='none';
+    fParcelas=1;
   }
 }
 function setFCartao(id,btn){fCartao=id;btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');}
+function setParcelas(n,btn){fParcelas=n;btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');}
 function setPag(v,btn){fPag=v;document.getElementById('chip-eu').classList.toggle('on',v==='eu');document.getElementById('chip-pai').classList.toggle('on',v==='cassiano');}
 function setFCat(id,btn){fCat=id;btn.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');}
 function setDataBtn(v,btn){
@@ -1352,16 +1509,30 @@ function salvarLanc(){
   if(!val||val<=0){toast('Informe um valor válido');return;}
   if(fFP==='credito'&&!fCartao&&st.cartoes.length>0){toast('Selecione o cartão');return;}
   const dataFinal=document.getElementById('inp-data').value||todayStr();
-  const novoL={
-    id:fEditId||('l'+Date.now()),valor:val,cat:fCat,fp:fFP,pag:fPag,
-    desc:document.getElementById('inp-desc').value.trim(),
-    data:dataFinal,
-    fatura:fFP==='credito'?document.getElementById('inp-fat').value:null,
-    cartaoId:fFP==='credito'?fCartao:null,
-  };
-  if(fEditId){st.lancs=st.lancs.map(l=>l.id===fEditId?novoL:l);}
-  else{st.lancs.push(novoL);}
-  save();fecharSheet('ov-lanc');renderAll();toast(fEditId?'Atualizado ✓':'Registrado ✓');
+  const desc=document.getElementById('inp-desc').value.trim();
+  const fatBase=fFP==='credito'?document.getElementById('inp-fat').value:null;
+  if(fEditId){
+    const novoL={id:fEditId,valor:val,cat:fCat,fp:fFP,pag:fPag,desc:desc,data:dataFinal,fatura:fatBase,cartaoId:fFP==='credito'?fCartao:null};
+    st.lancs=st.lancs.map(l=>l.id===fEditId?novoL:l);
+    save();fecharSheet('ov-lanc');renderAll();toast('Atualizado ✓');
+    return;
+  }
+  if(fFP==='credito'&&fParcelas>1){
+    // Generate installments
+    const fatParts=fatBase?fatBase.split('-').map(Number):[new Date().getFullYear(),new Date().getMonth()+1];
+    for(var p=1;p<=fParcelas;p++){
+      var fm=fatParts[1]-1+(p-1);
+      var fy=fatParts[0]+Math.floor(fm/12);
+      fm=fm%12+1;
+      var fatKey=fy+'-'+String(fm).padStart(2,'0');
+      var pDesc=(desc||'')+' '+p+'/'+fParcelas;
+      st.lancs.push({id:'l'+Date.now()+'_'+p,valor:val,cat:fCat,fp:'credito',pag:fPag,desc:pDesc.trim(),data:dataFinal,fatura:fatKey,cartaoId:fCartao});
+    }
+    save();fecharSheet('ov-lanc');renderAll();toast(fParcelas+'x parcelas registradas ✓');
+  } else {
+    st.lancs.push({id:'l'+Date.now(),valor:val,cat:fCat,fp:fFP,pag:fPag,desc:desc,data:dataFinal,fatura:fatBase,cartaoId:fFP==='credito'?fCartao:null});
+    save();fecharSheet('ov-lanc');renderAll();toast('Registrado ✓');
+  }
 }
 
 // ═══ MODAL FIXO ═══
@@ -1749,7 +1920,8 @@ function addLancCategoria(catId){
 }
 
 // ═══ EXPOSE GLOBALS ═══
-window.orcClick=function(e){var el=e.currentTarget;window.abrirDrilldown(el.getAttribute('data-cid'));};window.abrirDrilldown=abrirDrilldown;window.editDrillLanc=editDrillLanc;window.delDrillLanc=delDrillLanc;window.addLancCategoria=addLancCategoria;
+window.orcClick=function(e){var el=e.currentTarget;window.abrirDrilldown(el.getAttribute('data-cid'));};window.abrirModalCarteira=abrirModalCarteira;window.salvarCarteira=salvarCarteira;window.delCarteira=delCarteira;window.setCartCat=setCartCat;window.setParcelas=setParcelas;
+window.abrirDrilldown=abrirDrilldown;window.editDrillLanc=editDrillLanc;window.delDrillLanc=delDrillLanc;window.addLancCategoria=addLancCategoria;
 window.pinPress=pinPress;window.pinDel=pinDel;window.salvarOrcamento=salvarOrcamento;window.resetOrcamentos=resetOrcamentos;
 window.toggleHide=toggleHide;window.exportPDF=exportPDF;window.confirmDel=confirmDel;
 window.irPara=irPara;window.mudarMes=mudarMes;window.setVisao=setVisao;window.setDFC=setDFC;
