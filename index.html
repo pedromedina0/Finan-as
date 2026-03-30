@@ -2085,8 +2085,8 @@ function filtrarLancs(q){
       +'<div class="item-sub">'+dia+'/'+mes+' '+fpB+pagB+ctB+'</div></div>'
       +'<div style="display:flex;align-items:center;gap:4px">'
       +'<div class="item-amount hv">'+fmt(l.valor)+'</div>'
-      +'<button class="edit-btn" onclick="abrirSheet(''+l.id+'')">✎</button>'
-      +'<button class="del-btn" onclick="confirmDel('lanc',''+l.id+'')">×</button>'
+      +'<button class="edit-btn" data-eid2="'+l.id+'" onclick="window.abrirSheet(this.getAttribute(\"data-eid2\"))">✎</button>'
+      +'<button class="del-btn" data-did2="'+l.id+'" onclick="window.filtDelLanc(this)">x</button>'
       +'</div></div>';
   }).join('');
   if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
@@ -2094,7 +2094,7 @@ function filtrarLancs(q){
 
 // ═══ EXPOSE GLOBALS ═══
 window.orcClick=function(e){var el=e.currentTarget;window.abrirDrilldown(el.getAttribute('data-cid'));};window.abrirModalCarteira=abrirModalCarteira;window.salvarCarteira=salvarCarteira;window.delCarteira=delCarteira;window.setCartCat=setCartCat;window.setParcelas=setParcelas;
-window.atualizarMeta=atualizarMeta;window.filtrarLancs=filtrarLancs;
+window.atualizarMeta=atualizarMeta;window.filtrarLancs=filtrarLancs;window.filtDelLanc=function(btn){window.confirmDel('lanc',btn.dataset.did2);};
 window.abrirDrilldown=abrirDrilldown;window.editDrillLanc=editDrillLanc;window.delDrillLanc=delDrillLanc;window.addLancCategoria=addLancCategoria;
 window.pinPress=pinPress;window.pinDel=pinDel;window.salvarOrcamento=salvarOrcamento;window.resetOrcamentos=resetOrcamentos;
 window.toggleHide=toggleHide;window.exportPDF=exportPDF;window.confirmDel=confirmDel;
