@@ -1278,99 +1278,143 @@ function renderOrc(){
   if(!st.metaPoupar) st.metaPoupar=1000;
   const orc=st.orcamentos;
   const meta=st.metaPoupar||0;
-  const maxGasto=totalRec-meta;
+
+  // Fixos meus (já comprometidos — não competem com orçamento variável)
+  const totalFixosEu=st.fixos.filter(f=>f.pag==='eu').reduce((s,f)=>s+(f.valor||0),0);
+  // Máximo de gastos VARIÁVEIS = receita - fixos - meta de poupança
+  const maxGastoVar=totalRec-totalFixosEu-meta;
+  // Gasto diário baseado nos dias restantes do mês
   const diasNoMes=new Date(anoAtual,mesAtual+1,0).getDate();
   const hoje=new Date();
-  const diasRestantes=mesAtual===hoje.getMonth()&&anoAtual===hoje.getFullYear()?diasNoMes-hoje.getDate()+1:diasNoMes;
-  const gastoDiario=diasRestantes>0?Math.floor(maxGasto/diasRestantes):0;
+  const diasRestantes=mesAtual===hoje.getMonth()&&anoAtual===hoje.getFullYear()?Math.max(diasNoMes-hoje.getDate()+1,1):diasNoMes;
+  const gastoDiario=maxGastoVar>0?Math.floor(maxGastoVar/diasRestantes):0;
 
-  // Set meta input value
+  // Set meta input value on first load
   const metaInp=document.getElementById('inp-meta-poupar');
-  if(metaInp&&metaInp.value==='') metaInp.value=meta>0?meta.toFixed(2).replace('.',','):'';
+  if(metaInp&&document.activeElement!==metaInp){
+    metaInp.value=meta>0?String(meta).replace('.',','):'';
+  }
 
-  // Calc gastos do mês
-  const {totalFix,totalVar,src}=calcMes(mesAtual,anoAtual,'meu');
-  const totalGasto=totalFix+totalVar;
-  const totalOrcado=Object.entries(orc).filter(function(e){return e[0]!=='investimentos';}).reduce(function(s,e){return s+(e[1]||0);},0);
-  const orcExcede=totalOrcado>maxGasto&&maxGasto>0;
+  // Gastos variáveis do mês (meu, excluindo investimentos)
+  const {src}=calcMes(mesAtual,anoAtual,'meu');
+  const totalVarMes=src.filter(l=>l.cat!=='investimentos').reduce((s,l)=>s+(l.valor||0),0);
+  const totalInvMes=src.filter(l=>l.cat==='investimentos').reduce((s,l)=>s+(l.valor||0),0);
 
-  // Meta stats
-  const pctMeta=totalRec>0?Math.min(Math.round((totalRec-totalGasto)/totalRec*100),100):0;
-  const metaColor=pctMeta>=20?'var(--green)':pctMeta>=10?'var(--amber)':'var(--red)';
-  const pctGasto=maxGasto>0?Math.min(Math.round(totalGasto/maxGasto*100),100):0;
-  const barColor=pctGasto>100?'var(--red)':pctGasto>80?'var(--amber)':'var(--green)';
+  // Taxa de poupança real = (receita - fixos - variáveis - investimentos) / receita
+  const sobra=totalRec-totalFixosEu-totalVarMes-totalInvMes;
+  const taxaReal=totalRec>0?Math.round(sobra/totalRec*100):0;
+  const taxaColor=taxaReal>=20?'var(--green)':taxaReal>=10?'var(--amber)':'var(--red)';
 
+  // % do limite variável já gasto
+  const pctVarUsado=maxGastoVar>0?Math.min(Math.round(totalVarMes/maxGastoVar*100),100):0;
+  const barColorVar=pctVarUsado>100?'var(--red)':pctVarUsado>80?'var(--amber)':'var(--green)';
+
+  // Somatório dos orçamentos por categoria (exceto investimentos)
+  const totalOrcado=Object.entries(orc).filter(e=>e[0]!=='investimentos').reduce((s,e)=>s+(e[1]||0),0);
+  const orcExcede=totalOrcado>maxGastoVar&&maxGastoVar>0;
+  const orcDiff=totalOrcado-maxGastoVar;
+
+  // Meta-stats card
   const metaEl=document.getElementById('meta-stats');
   if(metaEl){
     metaEl.innerHTML=
-      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">'
+      // Linha 1: 3 indicadores principais
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">'
       +'<div style="background:var(--bg3);border-radius:8px;padding:10px">'
-      +'<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Máx. gastos</div>'
-      +'<div style="font-size:15px;font-weight:500;color:var(--text)" class="hv">'+fmt(maxGasto)+'</div></div>'
+      +'<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Máx. variável</div>'
+      +'<div style="font-size:15px;font-weight:500" class="hv">'+fmt(maxGastoVar)+'</div>'
+      +'<div style="font-size:10px;color:var(--text3);margin-top:2px">receita − fixos − meta</div>'
+      +'</div>'
       +'<div style="background:var(--bg3);border-radius:8px;padding:10px">'
       +'<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Gasto/dia</div>'
-      +'<div style="font-size:15px;font-weight:500;color:var(--gold)" class="hv">'+fmt(gastoDiario)+'</div></div>'
-      +'<div style="background:var(--bg3);border-radius:8px;padding:10px">'
-      +'<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Taxa poup.</div>'
-      +'<div style="font-size:15px;font-weight:500" style="color:'+metaColor+'" class="hv">'+pctMeta+'%</div></div>'
+      +'<div style="font-size:15px;font-weight:500;color:var(--gold)" class="hv">'+fmt(gastoDiario)+'</div>'
+      +'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+diasRestantes+' dias restantes</div>'
       +'</div>'
-      +'<div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:'+(orcExcede?'8px':'0px')+'">'
-      +'<div style="height:100%;width:'+pctGasto+'%;background:'+barColor+';border-radius:3px;transition:width .5s"></div></div>'
-      +(orcExcede?'<div style="font-size:12px;color:var(--red);padding:6px 10px;background:var(--red-dim);border-radius:6px;margin-top:4px">⚠ Orçamentos somam '+fmt(totalOrcado)+' — excede em '+fmt(totalOrcado-maxGasto)+' o limite para atingir sua meta</div>':'')
-      +(meta>0&&pctMeta<20&&totalGasto>0?'<div style="font-size:12px;color:var(--amber);margin-top:6px">💡 No ritmo atual, taxa de poupança projetada: '+pctMeta+'%</div>':'');
+      +'<div style="background:var(--bg3);border-radius:8px;padding:10px">'
+      +'<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Taxa poupança</div>'
+      +'<div style="font-size:15px;font-weight:500;color:'+taxaColor+'" class="hv">'+taxaReal+'%</div>'
+      +'<div style="font-size:10px;color:var(--text3);margin-top:2px">meta: '+Math.round(meta/totalRec*100)+'%</div>'
+      +'</div>'
+      +'</div>'
+      // Barra de uso do envelope variável
+      +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px">'
+      +'<span>Gasto variável: <span class="hv">'+fmt(totalVarMes)+'</span> de <span class="hv">'+fmt(maxGastoVar)+'</span></span>'
+      +'<span style="color:'+barColorVar+'">'+pctVarUsado+'%</span>'
+      +'</div>'
+      +'<div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:10px">'
+      +'<div style="height:100%;width:'+pctVarUsado+'%;background:'+barColorVar+';border-radius:3px;transition:width .5s"></div></div>'
+      // Somatório dos orçamentos
+      +'<div style="background:var(--bg3);border-radius:8px;padding:10px;'+(orcExcede?'border:1px solid rgba(248,113,113,0.3)':'')+'">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<span style="font-size:12px;color:var(--text2)">Somatório dos orçamentos</span>'
+      +'<span style="font-size:14px;font-weight:500" class="hv">'+fmt(totalOrcado)+'</span>'
+      +'</div>'
+      +(orcExcede
+        ?'<div style="font-size:11px;color:var(--red);margin-top:5px">⚠ Excede em '+fmt(orcDiff)+' o limite variável — ajuste os tetos ou a meta</div>'
+        :totalOrcado>0?'<div style="font-size:11px;color:var(--green);margin-top:5px">✓ Dentro do limite (sobra '+fmt(maxGastoVar-totalOrcado)+')</div>'
+        :'<div style="font-size:11px;color:var(--text3);margin-top:5px">Configure os tetos por categoria abaixo</div>')
+      +'</div>';
   }
+
+  // Update h-taxa in dashboard if visible
+  const taxaEl=document.getElementById('h-taxa');
+  if(taxaEl){ taxaEl.textContent=(taxaReal>=0?'+':'')+taxaReal+'%'; taxaEl.style.color=taxaColor; }
 
   document.getElementById('orc-mes-label').textContent=MESES_F[mesAtual]+' '+anoAtual+' — Orçamento';
 
+  // Gastos por categoria
   const porCat={};
-  st.cats.forEach(function(c){porCat[c.id]=0;});
-  st.fixos.filter(function(f){return f.pag==='eu';}).forEach(function(f){if(f.valor&&porCat[f.cat]!==undefined)porCat[f.cat]+=f.valor;});
-  src.filter(function(l){return l.cat!=='investimentos';}).forEach(function(l){if(porCat[l.cat]!==undefined)porCat[l.cat]+=(l.valor||0);});
+  st.cats.forEach(c=>{porCat[c.id]=0;});
+  st.fixos.filter(f=>f.pag==='eu').forEach(f=>{if(f.valor&&porCat[f.cat]!==undefined)porCat[f.cat]+=f.valor;});
+  src.filter(l=>l.cat!=='investimentos').forEach(l=>{if(porCat[l.cat]!==undefined)porCat[l.cat]+=(l.valor||0);});
 
-  const totalOrcAll=Object.values(orc).reduce(function(s,v){return s+(v||0);},0);
-  const totalGastoAll=Object.values(porCat).reduce(function(s,v){return s+v;},0);
-  const pctTotal=totalOrcAll>0?Math.round(totalGastoAll/totalOrcAll*100):0;
+  const totalGastoAll=Object.values(porCat).reduce((s,v)=>s+v,0);
+  const pctTotal=totalOrcado>0?Math.round(totalGastoAll/totalOrcado*100):0;
   const barColorTotal=pctTotal>90?'var(--red)':pctTotal>70?'var(--amber)':'var(--green)';
 
-  document.getElementById('orc-resumo').innerHTML=
-    '<div class="orc-resumo-grid">'
-    +'<div class="orc-resumo-item"><div class="orc-resumo-lbl">Orçado</div><div class="orc-resumo-val hv">'+fmt(totalOrcAll)+'</div></div>'
-    +'<div class="orc-resumo-item"><div class="orc-resumo-lbl">Gasto</div><div class="orc-resumo-val mv-r hv">'+fmt(totalGastoAll)+'</div></div>'
-    +'<div class="orc-resumo-item"><div class="orc-resumo-lbl">Restante</div><div class="orc-resumo-val hv" style="color:'+(totalOrcAll-totalGastoAll>=0?'var(--green)':'var(--red)')+'">'+fmt(totalOrcAll-totalGastoAll)+'</div></div>'
-    +'</div>'
-    +'<div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:4px">'
-    +'<div style="height:100%;width:'+Math.min(pctTotal,100)+'%;background:'+barColorTotal+';border-radius:3px;transition:width .5s"></div></div>';
-
-  const catsComOrc=st.cats.filter(function(c){return c.id!=='investimentos';});
-  document.getElementById('orc-cats').innerHTML=catsComOrc.map(function(c){
-    const gasto=porCat[c.id]||0;
-    const limite=orc[c.id]||0;
-    const pct=limite>0?Math.round(gasto/limite*100):0;
-    const barColor=pct>100?'var(--red)':pct>80?'var(--amber)':c.cor;
-    const border=orcExcede&&limite>0?'border-color:rgba(248,113,113,0.3)':'';
-    return '<div class="orc-card cat-bar-clickable" onclick="window.orcClick(event)" data-cid="'+c.id+'" style="'+border+'">'
-      +'<div class="orc-header">'
-      +'<div class="orc-cat-name"><span>'+c.icon+'</span>'+c.label+'</div>'
-      +'<div style="display:flex;align-items:center;gap:8px">'
-      +'<span class="orc-pct" style="color:'+barColor+'">'+pct+'%</span>'
-      +'<input class="orc-edit-inp" type="number" value="'+limite+'" placeholder="Teto" '
-      +'onclick="event.stopPropagation()" onchange="window.salvarOrcamento(\"'+c.id+'\",this.value)" oninput="event.stopPropagation()" inputmode="numeric">'
-      +'</div></div>'
-      +'<div class="orc-bar-track"><div class="orc-bar-fill" style="width:'+Math.min(pct,100)+'%;background:'+barColor+'"></div></div>'
-      +'<div class="orc-footer">'
-      +'<span class="hv">Gasto: '+fmt(gasto)+'</span>'
-      +'<span class="hv" style="color:'+barColor+'">Limite: '+fmt(limite)+'</span>'
+  const orcResumoEl=document.getElementById('orc-resumo');
+  if(orcResumoEl){
+    orcResumoEl.innerHTML=
+      '<div class="orc-resumo-grid">'
+      +'<div class="orc-resumo-item"><div class="orc-resumo-lbl">Orçado</div><div class="orc-resumo-val hv">'+fmt(totalOrcado)+'</div></div>'
+      +'<div class="orc-resumo-item"><div class="orc-resumo-lbl">Gasto</div><div class="orc-resumo-val mv-r hv">'+fmt(totalGastoAll)+'</div></div>'
+      +'<div class="orc-resumo-item"><div class="orc-resumo-lbl">Restante</div><div class="orc-resumo-val hv" style="color:'+(totalOrcado-totalGastoAll>=0?'var(--green)':'var(--red)')+'">'+fmt(totalOrcado-totalGastoAll)+'</div></div>'
       +'</div>'
-      +(pct>100?'<div style="font-size:11px;color:var(--red);margin-top:6px">⚠ Acima do limite em '+fmt(gasto-limite)+'</div>':'')
-      +'</div>';
-  }).join('');
+      +'<div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:4px">'
+      +'<div style="height:100%;width:'+Math.min(pctTotal,100)+'%;background:'+barColorTotal+';border-radius:3px;transition:width .5s"></div></div>';
+  }
 
-  if(valoresOcultos) document.querySelectorAll('.hv').forEach(function(el){el.classList.add('hidden');});
+  // Render category cards
+  const catsComOrc=st.cats.filter(c=>c.id!=='investimentos');
+  const orcCatsEl=document.getElementById('orc-cats');
+  if(orcCatsEl){
+    orcCatsEl.innerHTML=catsComOrc.map(c=>{
+      const gasto=porCat[c.id]||0;
+      const limite=orc[c.id]||0;
+      const pct=limite>0?Math.round(gasto/limite*100):0;
+      const barColor=pct>100?'var(--red)':pct>80?'var(--amber)':c.cor;
+      return '<div class="orc-card cat-bar-clickable" onclick="window.orcClick(event)" data-cid="'+c.id+'">'
+        +'<div class="orc-header">'
+        +'<div class="orc-cat-name"><span>'+c.icon+'</span>'+c.label+'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px">'
+        +'<span class="orc-pct" style="color:'+barColor+'">'+pct+'%</span>'
+        +'<input class="orc-edit-inp" type="number" value="'+limite+'" placeholder="Teto" '
+        +'onclick="event.stopPropagation()" onchange="window.salvarOrcamento(this.getAttribute(\'data-catid\'),this.value)" data-catid="'+c.id+'" oninput="event.stopPropagation()" inputmode="numeric">'
+        +'</div></div>'
+        +'<div class="orc-bar-track"><div class="orc-bar-fill" style="width:'+Math.min(pct,100)+'%;background:'+barColor+'"></div></div>'
+        +'<div class="orc-footer">'
+        +'<span class="hv">Gasto: '+fmt(gasto)+'</span>'
+        +'<span class="hv" style="color:'+barColor+'">Limite: '+fmt(limite)+'</span>'
+        +'</div>'
+        +(pct>100?'<div style="font-size:11px;color:var(--red);margin-top:6px">⚠ Acima do limite em '+fmt(gasto-limite)+'</div>':'')
+        +'</div>';
+    }).join('');
+  }
+  if(valoresOcultos) document.querySelectorAll('.hv').forEach(el=>el.classList.add('hidden'));
 }
-
 function atualizarMeta(){
   var v=parseFloat(document.getElementById('inp-meta-poupar').value.replace(',','.'));
-  if(!isNaN(v)&&v>=0){st.metaPoupar=v;save();renderOrc();}
+  if(!isNaN(v)&&v>=0){st.metaPoupar=v;save();renderOrc();renderDash();}
 }
 function salvarOrcamento(catId, val){
   if(!st.orcamentos) st.orcamentos={...ORC_SUGESTOES};
